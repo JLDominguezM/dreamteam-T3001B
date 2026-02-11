@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  simulation:
+    build: .
+    image: so101_pid_image
+    container_name: so101_container
+    network_mode: host
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/ros2_ws/src/simulation_code
+    stdin_open: true
+    tty: true
+    # Using Nvidia gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
