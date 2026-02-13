@@ -24,3 +24,22 @@ docker ps
 ```
 docker exec -it so101_container bash
 ```
+
+3. Give permission to the X server to allow the container to access the display:
+
+```
+xhost +local:docker
+```
+
+4. Inside the container, set the DISPLAY environment variable:
+
+```
+export DISPLAY=:0
+```
+
+5. Now you can run the simulation code inside the container. For example, to run a Python script, use:
+
+```
+python3 run_mujoco_simulation.py &
+```
+
