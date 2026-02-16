@@ -1,145 +1,129 @@
 # SO-101 Robot Control - M4
 
-## Quick Start
-
-Sistema para evaluar 20 configs PID en el robot SO-101.
-
-```bash
-# Entrar al container
-docker exec -it so101_container bash
-cd /ros2_ws/src/simulation_code
-
-# Correr todo (toma ~10 min)
-rm -rf logs_rubrica/ plots_rubrica/ && \
-python3 generate_20_configs.py --output configs_rubric.json && \
-python3 run_all_rubric_experiments.py --config configs_rubric.json --output logs_rubrica/ && \
-python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/ && \
-python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md --json metrics.json && \
-echo "Listo! Revisa logs_rubrica/, plots_rubrica/ y METRICS.md"
-```
-
-Genera: 
-- 20 CSVs con datos
-- 20 plots PNG
-- Tabla de métricas (SSE, overshoot, settling time, etc.)
-- JSON con resultados
-
----
+Sistema para evaluar 20 configuraciones PID en el robot SO-101 mediante simulación en MuJoCo.
 
 ## Tabla de Contenidos
-- [Setup Docker](#setup-docker)
-- [Sistema de Experimentos](#sistema-de-experimentos)
-- [Uso](#uso)
-- [Archivos](#archivos)
-- [Resultados](#resultados)
+
+- [1. Setup Docker](#1-setup-docker)
+- [2. Ejecutar Simulacion con GUI](#2-ejecutar-simulacion-con-gui)
+- [3. Pipeline de Experimentos PID](#3-pipeline-de-experimentos-pid)
+- [4. Uso Detallado](#4-uso-detallado)
+- [5. Las 20 Configuraciones PID](#5-las-20-configuraciones-pid)
+- [6. Resultados y Analisis](#6-resultados-y-analisis)
+- [7. Archivos del Sistema](#7-archivos-del-sistema)
+- [8. Troubleshooting](#8-troubleshooting)
+- [Referencias](#referencias)
 
 ---
 
-## Setup Docker
+## 1. Setup Docker
 
-### Build container
+### 1.1 Construir y levantar el contenedor
+
+Desde la raiz del repositorio:
 
 ```bash
 cd M4-RobotControl/simulation_code
 docker compose up --build -d
+```
+
+Verifica que el contenedor este corriendo:
+
+```bash
 docker ps
 ```
 
-### Acceder al container
+Deberias ver `so101_container` en la lista con estado `Up`.
+
+### 1.2 Entrar al contenedor
 
 ```bash
 docker exec -it so101_container bash
 ```
 
-### 3. Configurar display (para visualización GUI)
+Una vez dentro, el workspace de trabajo es:
 
-**Desde el host:**
+```bash
+cd /ros2_ws/src/simulation_code
+```
+
+---
+
+## 2. Ejecutar Simulacion con GUI
+
+Si necesitas visualizar la simulacion con interfaz grafica (MuJoCo viewer), primero debes configurar el display.
+
+### 2.1 Permitir acceso al display (desde el host)
+
 ```bash
 xhost +local:docker
 ```
 
-**Dentro del contenedor:**
+### 2.2 Configurar la variable DISPLAY (dentro del contenedor)
+
 ```bash
 export DISPLAY=:0
 ```
 
-### 4. Ejecutar simulación con visualización
+### 2.3 Lanzar la simulacion
 
 ```bash
 cd /ros2_ws/src/simulation_code
 python3 run_mujoco_simulation.py
 ```
 
----
-
-## Sistema Automatizado de Rúbrica
-
-Este sistema ejecuta **20 experimentos PID** (4 familias × 5 variantes) para evaluar el comportamiento del robot SO-101 bajo diferentes configuraciones de control.
-
-### Filosofía de Sintonización
-
-**Per-Joint Tuning**: Cada joint tiene factores distintos según sus características:
-
-| Joint          | Kp   | Ki   | Kd   | Por qué                                   |
-|----------------|------|------|------|-------------------------------------------|
-| shoulder_lift  | 2.0× | 2.5× | 1.5× | Soporta más peso, necesita Ki alto        |
-| shoulder_pan   | 1.5× | 1.5× | 1.2× | Alta inercia rotatoria                    |
-| elbow_flex     | 1.5× | 2.0× | 1.3× | Inercia media, gravedad variable          |
-| wrist_flex     | 1.0× | 1.0× | 1.0× | Referencia base                           |
-| wrist_roll     | 0.6× | 0.5× | 0.8× | Menos inercia, más rápido                 |
-
-### Las 20 Combinaciones
-
-#### P (sin Ki, sin Kd)
-- `P_1_MuyBajo`: Kp=300 - Muy lento
-- `P_2_Bajo`: Kp=600 - Lento pero suave
-- `P_3_Medio`: Kp=1000 - Balance
-- `P_4_Alto`: Kp=1500 - Rápido, puede oscilar
-- `P_5_MuyAlto`: Kp=2500 - Muy rápido, overshoot
-
-#### PD (sin Ki)
-- `PD_1_PocoDamp`: Kp=1000, Kd=20 - Poco damping
-- `PD_2_Critico`: Kp=1000, Kd=50 - Damping crítico
-- `PD_3_OverDamp`: Kp=1000, Kd=100 - Sobreamortiguado
-- `PD_4_Rigido`: Kp=1800, Kd=90 - Ambos altos
-- `PD_5_ExcesivoKd`: Kp=1200, Kd=180 - Kd muy alto
-
-#### PI (sin Kd)
-- `PI_1_KiBajo`: Kp=800, Ki=40
-- `PI_2_KiMedio`: Kp=800, Ki=80
-- `PI_3_KiAlto`: Kp=800, Ki=160
-- `PI_4_KpBajo_KiAlto`: Kp=500, Ki=150
-- `PI_5_Agresivo`: Kp=1200, Ki=240
-
-#### PID (completo)
-- `PID_1_Conservador`: Kp=800, Ki=80, Kd=40
-- `PID_2_Balanceado`: Kp=1200, Ki=120, Kd=60
-- `PID_3_Agresivo`: Kp=1800, Ki=180, Kd=90
-- `PID_4_KiDominante`: Kp=2000, Ki=250, Kd=50
-- `PID_5_KdDominante`: Kp=1000, Ki=100, Kd=150
+> **Nota:** La GUI solo es necesaria para visualizacion. Los experimentos PID corren sin GUI (headless).
 
 ---
 
-## Uso
+## 3. Pipeline de Experimentos PID
 
-### IMPORTANTE: Correr todo dentro del container
+### Quick Start (un solo comando)
+
+Dentro del contenedor, ejecuta todo el pipeline de una vez:
 
 ```bash
-docker exec -it so101_container bash
 cd /ros2_ws/src/simulation_code
+
+rm -rf logs_rubrica/ plots_rubrica/ && \
+python3 generate_20_configs.py --output configs_rubric.json && \
+python3 run_all_rubric_experiments.py --config configs_rubric.json --output logs_rubrica/ && \
+python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/ && \
+python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md --json metrics.json
 ```
+
+Tambien puedes usar el script interactivo con progreso visual:
+
+```bash
+./run_complete_pipeline.sh
+```
+
+**Tiempo estimado:** ~5-10 minutos.
+
+### Salida generada
+
+| Directorio/Archivo   | Contenido                                          |
+|----------------------|-----------------------------------------------------|
+| `logs_rubrica/`      | 20 CSVs con datos crudos (posicion, velocidad, tiempo) |
+| `plots_rubrica/`     | 20 graficas PNG (posicion vs tiempo, 5 joints cada una) |
+| `METRICS.md`         | Tabla comparativa con metricas cuantitativas         |
+| `metrics.json`       | Datos estructurados en JSON                          |
 
 ---
 
-### Paso 1: Generar configs
+## 4. Uso Detallado
+
+Todos los comandos se ejecutan **dentro del contenedor** en `/ros2_ws/src/simulation_code`.
+
+### Paso 1: Generar configuraciones
 
 ```bash
 python3 generate_20_configs.py --output configs_rubric.json --print-table
 ```
 
-Esto crea `configs_rubric.json` con las 20 configuraciones de ganancias escaladas por joint.
+Crea `configs_rubric.json` con las 20 configuraciones de ganancias escaladas por joint.
 
-### Paso 2: Ejecutar UN Experimento (opcional)
+### Paso 2: Ejecutar un experimento individual (opcional)
 
 ```bash
 python3 run_rubric_experiment.py \
@@ -148,9 +132,7 @@ python3 run_rubric_experiment.py \
   --output logs_rubrica/
 ```
 
-Genera: `logs_rubrica/log_P_1_MuyBajo.csv`
-
-### Paso 3: Ejecutar TODOS los Experimentos (20)
+### Paso 3: Ejecutar los 20 experimentos
 
 ```bash
 python3 run_all_rubric_experiments.py \
@@ -158,218 +140,183 @@ python3 run_all_rubric_experiments.py \
   --output logs_rubrica/
 ```
 
-⏱️ **Tiempo estimado**: ~5-10 minutos (sin visualización)
-
-**Opciones útiles:**
+**Opciones utiles:**
 
 ```bash
-# Solo familia P (5 experimentos)
+# Solo una familia (ej. P, PD, PI o PID)
 python3 run_all_rubric_experiments.py --families P --output logs_rubrica/
+
+# Multiples familias
+python3 run_all_rubric_experiments.py --families P,PID --output logs_rubrica/
 
 # Omitir experimentos ya ejecutados
 python3 run_all_rubric_experiments.py --skip-existing --output logs_rubrica/
 
-# Continuar desde un punto específico
+# Continuar desde un experimento especifico
 python3 run_all_rubric_experiments.py --start-from PD_3_OverDamp --output logs_rubrica/
-
-# Filtrar múltiples familias
-python3 run_all_rubric_experiments.py --families P,PID --output logs_rubrica/
 ```
 
-### Paso 4: Generar Gráficas
+### Paso 4: Generar graficas
 
 ```bash
 python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/
 ```
 
-Esto genera una gráfica PNG por cada experimento mostrando los 5 joints con sus trayectorias.
-
-### Paso 5: Análisis Cuantitativo (Métricas)
+### Paso 5: Calcular metricas
 
 ```bash
 python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md --json metrics.json
 ```
 
-Calcula métricas para cada experimento:
-- **SSE**: Steady-State Error (error final)
-- **Overshoot**: Sobre-disparo máximo (%)
-- **Settling Time**: Tiempo para estabilizar (±2°)
-- **Rise Time**: Tiempo para alcanzar 90% del cambio
-- **RMSE**: Error cuadrático medio
-- **Max Velocity**: Velocidad máxima
+Metricas calculadas por experimento:
 
-**Opciones:**
-
-```bash
-# Solo markdown (sin JSON)
-python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md
-
-# Analizar un experimento específico
-python3 analyze_metrics.py --input logs_rubrica/ --combo-id P_1_MuyBajo --output metrics_p1.md
-```
+| Metrica           | Descripcion                              |
+|-------------------|------------------------------------------|
+| **SSE**           | Error en estado estacionario (error final) |
+| **Overshoot**     | Sobre-disparo maximo (%)                  |
+| **Settling Time** | Tiempo para estabilizar (+-2°)            |
+| **Rise Time**     | Tiempo para alcanzar 90% del cambio       |
+| **RMSE**          | Error cuadratico medio                    |
+| **Max Velocity**  | Velocidad maxima                          |
 
 ---
 
-### 🎯 Pipeline Completo (Un solo comando)
+## 5. Las 20 Configuraciones PID
 
-**Opción 1: Script automatizado (recomendado)**
+El sistema evalua **4 familias x 5 variantes = 20 configuraciones**.
 
-```bash
-cd /ros2_ws/src/simulation_code
-./run_complete_pipeline.sh
-```
+### Filosofia de sintonizacion (Per-Joint Tuning)
 
-Este script interactivo ejecuta todo el pipeline con progreso visual y validaciones.
+Cada joint tiene factores de escala distintos segun sus caracteristicas fisicas:
 
-**Opción 2: Comando manual**
+| Joint          | Kp   | Ki   | Kd   | Justificacion                             |
+|----------------|------|------|------|-------------------------------------------|
+| shoulder_lift  | 2.0x | 2.5x | 1.5x | Soporta mas peso, necesita Ki alto        |
+| shoulder_pan   | 1.5x | 1.5x | 1.2x | Alta inercia rotatoria                    |
+| elbow_flex     | 1.5x | 2.0x | 1.3x | Inercia media, gravedad variable          |
+| wrist_flex     | 1.0x | 1.0x | 1.0x | Referencia base                           |
+| wrist_roll     | 0.6x | 0.5x | 0.8x | Menos inercia, mas rapido                 |
 
-```bash
-# Limpiar, generar configs, ejecutar 20 experimentos, crear gráficas y analizar métricas
-cd /ros2_ws/src/simulation_code && \
-rm -rf logs_rubrica/ plots_rubrica/ && \
-python3 generate_20_configs.py --output configs_rubric.json && \
-python3 run_all_rubric_experiments.py --config configs_rubric.json --output logs_rubrica/ && \
-python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/ && \
-python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md --json metrics.json && \
-echo "Listo! Revisa logs_rubrica/, plots_rubrica/ y METRICS.md"
-```
+### Familia P (solo proporcional)
 
-**Resultado final:**
-- `logs_rubrica/` → 20 CSVs con datos crudos
-- `plots_rubrica/` → 20 gráficas PNG (posición vs tiempo)
-- `METRICS.md` → Tabla comparativa con métricas cuantitativas
-- `metrics.json` → Datos estructurados en JSON
+| ID             | Kp   | Comportamiento esperado     |
+|----------------|------|-----------------------------|
+| `P_1_MuyBajo`  | 300  | Muy lento                   |
+| `P_2_Bajo`     | 600  | Lento pero suave            |
+| `P_3_Medio`    | 1000 | Balance                     |
+| `P_4_Alto`     | 1500 | Rapido, puede oscilar       |
+| `P_5_MuyAlto`  | 2500 | Muy rapido, overshoot       |
+
+### Familia PD (sin integral)
+
+| ID               | Kp   | Kd  | Comportamiento esperado |
+|------------------|------|-----|-------------------------|
+| `PD_1_PocoDamp`  | 1000 | 20  | Poco damping            |
+| `PD_2_Critico`   | 1000 | 50  | Damping critico         |
+| `PD_3_OverDamp`  | 1000 | 100 | Sobreamortiguado        |
+| `PD_4_Rigido`    | 1800 | 90  | Ambos altos             |
+| `PD_5_ExcesivoKd`| 1200 | 180 | Kd muy alto             |
+
+### Familia PI (sin derivativo)
+
+| ID                  | Kp  | Ki  |
+|---------------------|-----|-----|
+| `PI_1_KiBajo`       | 800 | 40  |
+| `PI_2_KiMedio`      | 800 | 80  |
+| `PI_3_KiAlto`       | 800 | 160 |
+| `PI_4_KpBajo_KiAlto`| 500 | 150 |
+| `PI_5_Agresivo`     | 1200| 240 |
+
+### Familia PID (completo)
+
+| ID                 | Kp   | Ki  | Kd  |
+|--------------------|------|-----|-----|
+| `PID_1_Conservador`| 800  | 80  | 40  |
+| `PID_2_Balanceado` | 1200 | 120 | 60  |
+| `PID_3_Agresivo`   | 1800 | 180 | 90  |
+| `PID_4_KiDominante`| 2000 | 250 | 50  |
+| `PID_5_KdDominante`| 1000 | 100 | 150 |
 
 ---
 
-### 📂 Acceder a los Resultados desde el Host
+## 6. Resultados y Analisis
 
-Los archivos generados dentro del contenedor están montados en:
+### Fases del experimento
+
+Cada experimento ejecuta 4 fases (8 segundos totales):
+
+1. **Move Home -> 0°** (2s) - Interpolacion suave desde pose inicial
+2. **Hold 0°** (2s) - Mantener posicion, evaluar estabilidad
+3. **Move 0° -> Home** (2s) - Retorno a pose inicial
+4. **Hold Home** (2s) - Mantener pose final
+
+### Estructura del CSV
+
+Cada CSV contiene las siguientes columnas:
+
+```
+time,
+shoulder_pan, target_shoulder_pan, shoulder_pan_velocity,
+shoulder_lift, target_shoulder_lift, shoulder_lift_velocity,
+elbow_flex, target_elbow_flex, elbow_flex_velocity,
+wrist_flex, target_wrist_flex, wrist_flex_velocity,
+wrist_roll, target_wrist_roll, wrist_roll_velocity
+```
+
+> Las posiciones estan en grados (deg) y las velocidades en grados/s (deg/s).
+
+### Acceder a los resultados desde el host
+
+Los archivos generados dentro del contenedor estan disponibles gracias al volumen montado. Desde el host:
 
 ```bash
-# Desde tu host (fuera del contenedor)
-cd /home/dominguez/FundamentacionRobotics/dreamteam-T3001B/M4-RobotControl/simulation_code
+cd M4-RobotControl/simulation_code
 
-# Ver logs CSV
-ls -lh logs_rubrica/
+ls -lh logs_rubrica/    # Ver CSVs
+ls -lh plots_rubrica/   # Ver graficas
 
-# Ver gráficas PNG
-ls -lh plots_rubrica/
-
-# Abrir una gráfica
+# Abrir una grafica
 xdg-open plots_rubrica/plot_P_1_MuyBajo.png
 ```
 
 ---
 
-## 📁 Archivos del Sistema
+## 7. Archivos del Sistema
 
-### Scripts Principales
+### Scripts principales
 
-| Archivo                          | Descripción                                               |
-|----------------------------------|-----------------------------------------------------------|
-| `generate_20_configs.py`         | Genera JSON con 20 configuraciones de ganancias          |
-| `run_rubric_experiment.py`       | Ejecuta UN experimento individual (sin GUI)              |
-| `run_all_rubric_experiments.py`  | Ejecuta los 20 experimentos automáticamente              |
-| `plot_rubric_results.py`         | Genera gráficas PNG de posición vs tiempo                |
-| `analyze_metrics.py`             | Calcula métricas cuantitativas (SSE, overshoot, etc.)    |
-| `run_complete_pipeline.sh`       | **AUTOMÁTICO**: Pipeline completo con progreso visual    |
-| `CSVDataLogger.py`               | Logger que guarda datos de simulación a CSV              |
-| `so101_mujoco_pid_utils.py`      | Funciones core PID (move_to_pose, hold_position)         |
-| `so101_control.py`               | Clases PID, perturbaciones, control de joints            |
+| Archivo                          | Descripcion                                           |
+|----------------------------------|-------------------------------------------------------|
+| `generate_20_configs.py`         | Genera JSON con 20 configuraciones de ganancias       |
+| `run_rubric_experiment.py`       | Ejecuta un experimento individual (sin GUI)           |
+| `run_all_rubric_experiments.py`  | Ejecuta los 20 experimentos automaticamente           |
+| `plot_rubric_results.py`         | Genera graficas PNG de posicion vs tiempo              |
+| `analyze_metrics.py`             | Calcula metricas cuantitativas (SSE, overshoot, etc.) |
+| `run_complete_pipeline.sh`       | Pipeline completo con progreso visual                 |
+| `run_mujoco_simulation.py`       | Simulacion con visualizacion GUI                      |
 
-### Archivos de Configuración
+### Modulos de soporte
 
-| Archivo                 | Descripción                                          |
-|-------------------------|------------------------------------------------------|
-| `configs_rubric.json`   | 20 configuraciones de ganancias PID                  |
-| `docker-compose.yml`    | Configuración del contenedor Docker                  |
-| `Dockerfile`            | Imagen Docker con MuJoCo y dependencias              |
+| Archivo                    | Descripcion                                       |
+|----------------------------|---------------------------------------------------|
+| `so101_control.py`         | Clases PID, perturbaciones, control de joints     |
+| `so101_mujoco_pid_utils.py`| Funciones core PID (move_to_pose, hold_position)  |
+| `CSVDataLogger.py`         | Logger que guarda datos de simulacion a CSV        |
 
-### Datos Generados
+### Configuracion
 
-| Archivo/Directorio | Contenido                                                    |
-|--------------------|--------------------------------------------------------------|
-| `logs_rubrica/`    | CSVs de los 20 experimentos (position, velocity, time)      |
-| `plots_rubrica/`   | Gráficas PNG de posición vs tiempo (5 joints por gráfica)   |
-| `METRICS.md`       | Tabla markdown con métricas cuantitativas comparativas       |
-| `metrics.json`     | Datos estructurados JSON con todas las métricas              |
-| `configs_rubric.json` | Configuración de las 20 combinaciones de ganancias PID   |
+| Archivo               | Descripcion                                    |
+|-----------------------|------------------------------------------------|
+| `configs_rubric.json` | 20 configuraciones de ganancias PID (generado) |
+| `docker-compose.yml`  | Configuracion del contenedor Docker            |
+| `Dockerfile`          | Imagen Docker con MuJoCo y dependencias        |
 
 ---
 
-## 📊 Resultados y Análisis
+## 8. Troubleshooting
 
-### Estructura del CSV
+### El contenedor no puede acceder al display
 
-Cada experimento genera un CSV con las siguientes columnas:
-
-```
-time, shoulder_pan, target_shoulder_pan, shoulder_pan_velocity,
-      shoulder_lift, target_shoulder_lift, shoulder_lift_velocity,
-      elbow_flex, target_elbow_flex, elbow_flex_velocity,
-      wrist_flex, target_wrist_flex, wrist_flex_velocity,
-      wrist_roll, target_wrist_roll, wrist_roll_velocity
-```
-
-**Nota**: Las posiciones y velocidades están en grados (deg) y grados/s (deg/s).
-
-### Fases del Experimento
-
-Cada experimento ejecuta 4 fases (8 segundos totales):
-
-1. **Move Home → 0°** (2s): Interpolación suave desde pose inicial
-2. **Hold 0°** (2s): Mantener posición, evaluar estabilidad
-3. **Move 0° → Home** (2s): Retorno a pose inicial
-4. **Hold Home** (2s): Mantener pose final
-
-### Métricas de Evaluación
-
-Para análisis cuantitativo, se pueden calcular:
-
-- **Error en estado estacionario**: |posición final - target|
-- **Overshoot**: Máximo sobre-disparo respecto al target
-- **Settling time**: Tiempo para entrar en ±2° del target
-- **Rise time**: Tiempo para alcanzar 90% del target
-- **Oscilación**: Desviación estándar en fase de hold
-
----
-
-## 🔧 Troubleshooting
-
-### Error: "Permission denied" al eliminar logs
-
-Los archivos fueron creados dentro del contenedor, necesitas eliminarlos desde ahí:
-
-```bash
-# DENTRO del contenedor
-docker exec -it so101_container bash
-cd /ros2_ws/src/simulation_code
-rm -rf logs_rubrica/ plots_rubrica/
-```
-
-### Error: "Config file not found"
-```bash
-# Generar el archivo JSON primero (dentro del contenedor)
-python3 generate_20_configs.py --output configs_rubric.json
-```
-
-### Error: "Model file not found"
-```bash
-# Verificar que estás en el directorio correcto (dentro del contenedor)
-cd /ros2_ws/src/simulation_code
-ls model/scene_urdf.xml  # Debe existir
-```
-
-### Error: "Multi-dimensional indexing" en gráficas
-
-Este error ya está resuelto en la versión actual del script. Si persiste:
-```bash
-# Actualizar el script plot_rubric_results.py desde el repositorio
-git pull origin Dev-setup
-```
-
-### Contenedor no puede acceder al display
 ```bash
 # Desde el host
 xhost +local:docker
@@ -378,9 +325,46 @@ xhost +local:docker
 export DISPLAY=:0
 ```
 
-### Ver logs en tiempo real durante experimentos
+### "Permission denied" al eliminar logs
+
+Los archivos fueron creados dentro del contenedor. Eliminalos desde ahi:
+
 ```bash
-# Abrir otra terminal y seguir el último CSV
+docker exec -it so101_container bash
+cd /ros2_ws/src/simulation_code
+rm -rf logs_rubrica/ plots_rubrica/
+```
+
+### "Config file not found"
+
+Genera el archivo de configuraciones primero:
+
+```bash
+python3 generate_20_configs.py --output configs_rubric.json
+```
+
+### "Model file not found"
+
+Verifica que estes en el directorio correcto y que el modelo exista:
+
+```bash
+cd /ros2_ws/src/simulation_code
+ls model/scene_urdf.xml
+```
+
+### "Multi-dimensional indexing" en graficas
+
+Este error esta resuelto en la version actual. Si persiste, actualiza el repo:
+
+```bash
+git pull origin Dev-setup
+```
+
+### Ver logs en tiempo real durante experimentos
+
+En otra terminal:
+
+```bash
 docker exec -it so101_container bash
 cd /ros2_ws/src/simulation_code/logs_rubrica
 watch -n 1 'ls -lht | head -5'
@@ -388,52 +372,12 @@ watch -n 1 'ls -lht | head -5'
 
 ---
 
-## Próximos Pasos (Opcional)
-
-### Análisis Cuantitativo
-
-Puedes crear un script adicional para calcular métricas:
-
-- **Error en estado estacionario (SSE)**: |posición final - target|
-- **Overshoot**: Máximo sobre-disparo (%)
-- **Settling time**: Tiempo para entrar en ±2° del target
-- **Rise time**: Tiempo para alcanzar 90% del target
-- **RMSE**: Error cuadrático medio
-
-### Tabla Comparativa
-
-Genera una tabla markdown con las métricas de los 20 experimentos:
-
-```python
-# Ejemplo de estructura
-python3 analyze_metrics.py --input logs_rubrica/ --output METRICS.md
-```
-
-### Documento de Filosofía
-
-Documenta la justificación física de los factores de escala:
-
-```markdown
-# PHILOSOPHY.md
-- shoulder_lift: 2.5× Ki por efecto gravitatorio
-- wrist_roll: 0.6× Kp por baja inercia
-- etc.
-```
-
----
-
 ## Referencias
 
-- **MuJoCo**: https://mujoco.readthedocs.io/
-- **SO-101 Robot**: https://www.waveshare.com/wiki/SO-ARM101
-- **Control PID**: https://en.wikipedia.org/wiki/PID_controller
-- **Ziegler-Nichols**: Método clásico de sintonización PID
+- [MuJoCo Documentation](https://mujoco.readthedocs.io/)
+- [SO-101 Robot (Waveshare)](https://www.waveshare.com/wiki/SO-ARM101)
+- [PID Controller (Wikipedia)](https://en.wikipedia.org/wiki/PID_controller)
 
 ---
 
-## Autores
-
-- Dream Team - T3001B
-- Fundamentos de Robótica
-- 2026
-
+**Dream Team - T3001B** | Fundamentos de Robotica | 2026
