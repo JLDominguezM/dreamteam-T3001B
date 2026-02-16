@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libosmesa6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install mujoco matplotlib numpy dash
+RUN pip3 install mujoco matplotlib "numpy<2" dash pandas
 
 WORKDIR /ros2_ws
 RUN mkdir -p src
