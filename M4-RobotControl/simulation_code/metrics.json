@@ -7,7 +7,7 @@
           "max_overshoot_%": 0.0,
           "settling_time_s": 0.0,
           "rise_time_s": 0.0,
-          "rmse_deg": 0.0353365101587855,
+          "rmse_deg": 0.035 3365101587855,
           "max_velocity_deg_s": 20.98701994500149
         },
         "hold_zero": {
