@@ -6,26 +6,26 @@ Métricas promediadas sobre todos los joints.
 
 | Combo ID | Familia | SSE (°) | Overshoot (%) | Settling (s) | Rise (s) | RMSE (°) |
 |----------|---------|---------|---------------|--------------|----------|----------|
-| PD_1                 | PD      |    3.11 |          3.97 |        1.441 |    0.709 |    21.13 |
-| PD_2                 | PD      |    6.01 |          6.75 |        1.471 |    0.998 |    21.45 |
-| PD_3                 | PD      |    2.75 |          3.54 |        1.458 |    1.042 |    21.21 |
-| PD_4                 | PD      |    3.56 |          4.43 |        1.450 |    0.698 |    21.18 |
-| PD_5                 | PD      |    0.73 |          0.88 |        1.455 |    1.355 |    20.79 |
-| PID_1                | PID     |    0.38 |          0.69 |        1.455 |    1.350 |    20.96 |
-| PID_2                | PID     |    0.12 |          0.14 |        1.463 |    1.347 |    20.83 |
-| PID_3                | PID     |    0.16 |          0.06 |        1.464 |    1.349 |    20.83 |
-| PID_4                | PID     |    0.18 |          0.22 |        1.468 |    1.352 |    20.83 |
-| PID_5                | PID     |    0.10 |          0.18 |        1.468 |    1.356 |    20.83 |
-| PI_1                 | PI      |    0.09 |          0.05 |        1.466 |    1.351 |    20.81 |
-| PI_2                 | PI      |    0.14 |          0.11 |        1.466 |    1.352 |    20.80 |
-| PI_3                 | PI      |    0.08 |          0.10 |        1.468 |    1.352 |    20.80 |
-| PI_4                 | PI      |    0.07 |          0.09 |        1.467 |    1.351 |    20.81 |
-| PI_5                 | PI      |    0.08 |          0.09 |        1.465 |    1.351 |    20.81 |
-| P_1                  | P       |    0.31 |          0.31 |        1.468 |    1.353 |    20.84 |
-| P_2                  | P       |    1.05 |          1.07 |        1.451 |    1.356 |    20.94 |
-| P_3                  | P       |    0.16 |          0.16 |        1.467 |    1.352 |    20.82 |
-| P_4                  | P       |    0.60 |          0.71 |        1.460 |    1.355 |    20.87 |
-| P_5                  | P       |    0.75 |          0.89 |        1.455 |    1.356 |    20.89 |
+| PD_1                 | PD      |    5.18 |          5.75 |        1.425 |    0.662 |    21.62 |
+| PD_2                 | PD      |    9.82 |          8.20 |        1.500 |    0.633 |    21.67 |
+| PD_3                 | PD      |    6.30 |          6.47 |        1.458 |    1.009 |    21.37 |
+| PD_4                 | PD      |    8.00 |          8.16 |        1.500 |    0.649 |    22.39 |
+| PD_5                 | PD      |    1.00 |          1.32 |        1.436 |    1.353 |    20.99 |
+| PID_1                | PID     |    0.35 |          0.17 |        1.468 |    1.350 |    20.85 |
+| PID_2                | PID     |    0.94 |          0.23 |        1.430 |    1.317 |    21.27 |
+| PID_3                | PID     |    0.15 |          0.54 |        1.458 |    1.338 |    21.01 |
+| PID_4                | PID     |    0.20 |          0.05 |        1.456 |    1.342 |    20.93 |
+| PID_5                | PID     |    0.09 |          0.66 |        1.468 |    1.353 |    20.86 |
+| PI_1                 | PI      |    0.16 |          0.19 |        1.464 |    1.351 |    20.83 |
+| PI_2                 | PI      |    0.18 |          0.10 |        1.462 |    1.348 |    20.81 |
+| PI_3                 | PI      |    0.10 |          0.11 |        1.467 |    1.354 |    20.81 |
+| PI_4                 | PI      |    0.10 |          0.12 |        1.469 |    1.352 |    20.81 |
+| PI_5                 | PI      |    0.05 |          0.05 |        1.467 |    1.351 |    20.80 |
+| P_1                  | P       |    0.29 |          0.33 |        1.468 |    1.353 |    20.83 |
+| P_2                  | P       |    0.36 |          0.41 |        1.467 |    1.354 |    20.84 |
+| P_3                  | P       |    0.28 |          0.27 |        1.468 |    1.352 |    20.83 |
+| P_4                  | P       |    0.35 |          0.37 |        1.469 |    1.353 |    20.84 |
+| P_5                  | P       |    0.20 |          0.20 |        1.467 |    1.352 |    20.82 |
 
 ---
 
@@ -41,7 +41,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 23.6°/s
+- Max Velocity: 23.1°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -50,28 +50,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 2.04%
-- Settling Time: 3.164s
-- Rise Time: 2.888s
-- RMSE: 45.68°
-- Max Velocity: 95.9°/s
+- Overshoot: 5.38%
+- Settling Time: 3.750s
+- Rise Time: 2.528s
+- RMSE: 43.79°
+- Max Velocity: 43.7°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
-- RMSE: 0.19°
+- Steady-State Error: 0.01°
+- RMSE: 0.93°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 4.49%
-- Settling Time: 3.750s
-- Rise Time: 2.784s
-- RMSE: 46.14°
-- Max Velocity: 78.4°/s
+- Overshoot: 0.17%
+- Settling Time: 2.996s
+- Rise Time: 2.766s
+- RMSE: 45.79°
+- Max Velocity: 76.5°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.04°
-- RMSE: 0.59°
+- Steady-State Error: 0.03°
+- RMSE: 0.05°
 
 #### Wrist Flex
 
@@ -80,7 +80,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 20.9°/s
+- Max Velocity: 21.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -93,11 +93,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 10.2°/s
+- Max Velocity: 0.8°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.03°
+- RMSE: 0.02°
 
 
 ### PD_2
@@ -109,7 +109,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 25.4°/s
+- Max Velocity: 18.9°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -118,28 +118,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 12.86%
+- Overshoot: 4.52%
 - Settling Time: 3.750s
-- Rise Time: 2.244s
-- RMSE: 41.60°
-- Max Velocity: 100.4°/s
+- Rise Time: 2.628s
+- RMSE: 44.19°
+- Max Velocity: 99.9°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 3.64°
+- RMSE: 0.73°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 1.07%
-- Settling Time: 3.456s
-- Rise Time: 3.182s
-- RMSE: 49.49°
-- Max Velocity: 69.5°/s
+- Overshoot: 10.89%
+- Settling Time: 3.750s
+- Rise Time: 2.438s
+- RMSE: 43.90°
+- Max Velocity: 92.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.04°
-- RMSE: 0.09°
+- RMSE: 2.20°
 
 #### Wrist Flex
 
@@ -148,11 +148,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 21.9°/s
+- Max Velocity: 9.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.04°
+- RMSE: 0.03°
 
 #### Wrist Roll
 
@@ -161,7 +161,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 10.2°/s
+- Max Velocity: 9.3°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -176,8 +176,8 @@ Métricas promediadas sobre todos los joints.
 - Overshoot: 0.00%
 - Settling Time: 0.000s
 - Rise Time: 0.000s
-- RMSE: 0.04°
-- Max Velocity: 17.7°/s
+- RMSE: 0.03°
+- Max Velocity: 19.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -186,28 +186,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 4.72%
+- Overshoot: 13.10%
 - Settling Time: 3.750s
-- Rise Time: 2.676s
-- RMSE: 44.16°
-- Max Velocity: 99.8°/s
+- Rise Time: 2.298s
+- RMSE: 42.09°
+- Max Velocity: 103.1°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.70°
+- RMSE: 3.75°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 1.83%
-- Settling Time: 3.334s
-- Rise Time: 3.066s
-- RMSE: 48.28°
-- Max Velocity: 78.2°/s
+- Overshoot: 1.91%
+- Settling Time: 3.330s
+- Rise Time: 3.074s
+- RMSE: 47.90°
+- Max Velocity: 79.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.04°
-- RMSE: 0.11°
+- RMSE: 0.18°
 
 #### Wrist Flex
 
@@ -216,11 +216,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 9.3°/s
+- Max Velocity: 21.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.03°
+- RMSE: 0.04°
 
 #### Wrist Roll
 
@@ -229,7 +229,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 9.3°/s
+- Max Velocity: 8.6°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -245,7 +245,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 19.8°/s
+- Max Velocity: 24.8°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -254,28 +254,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 6.54%
+- Overshoot: 4.99%
 - Settling Time: 3.750s
-- Rise Time: 2.606s
-- RMSE: 43.99°
-- Max Velocity: 99.1°/s
+- Rise Time: 2.668s
+- RMSE: 43.98°
+- Max Velocity: 100.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 1.26°
+- RMSE: 0.85°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 1.14%
-- Settling Time: 3.246s
-- Rise Time: 2.982s
-- RMSE: 47.15°
-- Max Velocity: 82.1°/s
+- Overshoot: 8.98%
+- Settling Time: 3.750s
+- Rise Time: 2.526s
+- RMSE: 44.89°
+- Max Velocity: 90.4°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.04°
-- RMSE: 0.10°
+- Steady-State Error: 0.03°
+- RMSE: 1.74°
 
 #### Wrist Flex
 
@@ -284,7 +284,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 21.5°/s
+- Max Velocity: 22.8°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -297,7 +297,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 1.1°/s
+- Max Velocity: 10.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -313,7 +313,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 22.2°/s
+- Max Velocity: 25.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -322,28 +322,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 1.19%
-- Settling Time: 3.460s
-- Rise Time: 3.172s
-- RMSE: 48.04°
-- Max Velocity: 94.9°/s
+- Overshoot: 0.81%
+- Settling Time: 3.578s
+- Rise Time: 3.308s
+- RMSE: 50.30°
+- Max Velocity: 83.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.11°
+- RMSE: 0.09°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.20%
-- Settling Time: 3.636s
-- Rise Time: 3.342s
-- RMSE: 51.38°
-- Max Velocity: 39.1°/s
+- Overshoot: 0.12%
+- Settling Time: 3.278s
+- Rise Time: 3.014s
+- RMSE: 47.65°
+- Max Velocity: 82.1°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.02°
-- RMSE: 0.04°
+- Steady-State Error: 0.03°
+- RMSE: 0.06°
 
 #### Wrist Flex
 
@@ -352,7 +352,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 21.5°/s
+- Max Velocity: 21.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -365,7 +365,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 8.7°/s
+- Max Velocity: 10.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -381,7 +381,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 24.5°/s
+- Max Velocity: 24.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -390,24 +390,24 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 3.99%
-- Settling Time: 3.750s
-- Rise Time: 3.526s
-- RMSE: 48.68°
-- Max Velocity: 98.3°/s
+- Overshoot: 0.05%
+- Settling Time: 3.658s
+- Rise Time: 3.312s
+- RMSE: 47.35°
+- Max Velocity: 98.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.48°
+- RMSE: 0.08°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.17%
-- Settling Time: 3.536s
-- Rise Time: 3.218s
-- RMSE: 47.98°
-- Max Velocity: 82.1°/s
+- Overshoot: 0.05%
+- Settling Time: 3.620s
+- Rise Time: 3.302s
+- RMSE: 49.08°
+- Max Velocity: 76.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.04°
@@ -420,7 +420,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 23.0°/s
+- Max Velocity: 20.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -449,7 +449,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 21.8°/s
+- Max Velocity: 22.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -458,27 +458,27 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.16%
-- Settling Time: 3.674s
-- Rise Time: 3.382s
-- RMSE: 50.49°
-- Max Velocity: 88.5°/s
+- Overshoot: 0.46%
+- Settling Time: 3.662s
+- Rise Time: 3.266s
+- RMSE: 45.66°
+- Max Velocity: 98.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.07°
+- RMSE: 0.08°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.02%
-- Settling Time: 3.636s
-- Rise Time: 3.332s
-- RMSE: 49.33°
-- Max Velocity: 76.9°/s
+- Overshoot: 0.08%
+- Settling Time: 3.218s
+- Rise Time: 2.914s
+- RMSE: 45.92°
+- Max Velocity: 82.0°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.04°
+- Steady-State Error: 0.03°
 - RMSE: 0.06°
 
 #### Wrist Flex
@@ -488,7 +488,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 20.5°/s
+- Max Velocity: 22.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -517,7 +517,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 22.0°/s
+- Max Velocity: 24.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -526,24 +526,24 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.02%
-- Settling Time: 3.670s
-- Rise Time: 3.376s
-- RMSE: 49.19°
-- Max Velocity: 98.5°/s
+- Overshoot: 2.24%
+- Settling Time: 3.750s
+- Rise Time: 3.412s
+- RMSE: 47.19°
+- Max Velocity: 99.9°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.08°
+- RMSE: 0.22°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.05%
-- Settling Time: 3.634s
-- Rise Time: 3.354s
-- RMSE: 50.69°
-- Max Velocity: 73.5°/s
+- Overshoot: 0.27%
+- Settling Time: 3.590s
+- Rise Time: 3.248s
+- RMSE: 49.00°
+- Max Velocity: 81.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -556,7 +556,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 22.3°/s
+- Max Velocity: 22.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -569,7 +569,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 9.5°/s
+- Max Velocity: 0.9°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -584,8 +584,8 @@ Métricas promediadas sobre todos los joints.
 - Overshoot: 0.00%
 - Settling Time: 0.000s
 - Rise Time: 0.000s
-- RMSE: 0.04°
-- Max Velocity: 22.8°/s
+- RMSE: 0.03°
+- Max Velocity: 16.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -594,28 +594,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.60%
-- Settling Time: 3.620s
-- Rise Time: 3.332s
-- RMSE: 50.84°
-- Max Velocity: 45.7°/s
+- Overshoot: 0.07%
+- Settling Time: 3.676s
+- Rise Time: 3.400s
+- RMSE: 50.90°
+- Max Velocity: 85.8°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
-- RMSE: 0.06°
+- Steady-State Error: 0.03°
+- RMSE: 0.07°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.14%
-- Settling Time: 3.668s
-- Rise Time: 3.370s
-- RMSE: 51.71°
-- Max Velocity: 36.8°/s
+- Overshoot: 0.11%
+- Settling Time: 3.542s
+- Rise Time: 3.232s
+- RMSE: 48.05°
+- Max Velocity: 81.2°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.02°
-- RMSE: 0.03°
+- Steady-State Error: 0.03°
+- RMSE: 0.06°
 
 #### Wrist Flex
 
@@ -624,11 +624,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 2.9°/s
+- Max Velocity: 22.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.03°
+- RMSE: 0.04°
 
 #### Wrist Roll
 
@@ -637,7 +637,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 9.8°/s
+- Max Velocity: 10.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -653,7 +653,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.04°
-- Max Velocity: 21.3°/s
+- Max Velocity: 23.6°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
@@ -662,28 +662,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 1.22%
-- Settling Time: 3.710s
-- Rise Time: 3.420s
-- RMSE: 48.51°
-- Max Velocity: 98.5°/s
+- Overshoot: 2.83%
+- Settling Time: 3.750s
+- Rise Time: 3.478s
+- RMSE: 48.45°
+- Max Velocity: 100.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.03°
-- RMSE: 0.12°
+- RMSE: 0.30°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.05%
-- Settling Time: 3.640s
-- Rise Time: 3.350s
-- RMSE: 50.85°
-- Max Velocity: 74.4°/s
+- Overshoot: 1.00%
+- Settling Time: 3.686s
+- Rise Time: 3.304s
+- RMSE: 48.38°
+- Max Velocity: 79.4°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
-- RMSE: 0.06°
+- Steady-State Error: 0.04°
+- RMSE: 0.08°
 
 #### Wrist Flex
 
@@ -692,11 +692,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 20.7°/s
+- Max Velocity: 10.1°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.04°
+- RMSE: 0.03°
 
 #### Wrist Roll
 
@@ -705,7 +705,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 9.3°/s
+- Max Velocity: 9.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -730,28 +730,28 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.09%
-- Settling Time: 3.650s
-- Rise Time: 3.368s
-- RMSE: 51.19°
-- Max Velocity: 104.9°/s
+- Overshoot: 0.08%
+- Settling Time: 3.658s
+- Rise Time: 3.396s
+- RMSE: 50.94°
+- Max Velocity: 148.0°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
-- RMSE: 0.04°
+- Steady-State Error: 0.02°
+- RMSE: 0.05°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.15%
+- Overshoot: 0.21%
 - Settling Time: 3.666s
-- Rise Time: 3.370s
-- RMSE: 51.69°
-- Max Velocity: 58.3°/s
+- Rise Time: 3.360s
+- RMSE: 51.31°
+- Max Velocity: 71.0°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.02°
-- RMSE: 0.03°
+- Steady-State Error: 0.01°
+- RMSE: 0.04°
 
 #### Wrist Flex
 
@@ -763,7 +763,7 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 5.4°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Wrist Roll
@@ -799,27 +799,27 @@ Métricas promediadas sobre todos los joints.
 
 **Move to 0°:**
 - Overshoot: 0.09%
-- Settling Time: 3.656s
+- Settling Time: 3.640s
 - Rise Time: 3.380s
-- RMSE: 51.65°
-- Max Velocity: 131.7°/s
+- RMSE: 51.41°
+- Max Velocity: 166.9°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
-- RMSE: 0.04°
+- Steady-State Error: 0.02°
+- RMSE: 0.05°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.72%
-- Settling Time: 3.688s
-- Rise Time: 3.386s
-- RMSE: 51.65°
-- Max Velocity: 83.2°/s
+- Overshoot: 0.16%
+- Settling Time: 3.670s
+- Rise Time: 3.372s
+- RMSE: 51.72°
+- Max Velocity: 61.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.04°
+- RMSE: 0.03°
 
 #### Wrist Flex
 
@@ -828,7 +828,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 5.6°/s
+- Max Velocity: 5.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -867,10 +867,10 @@ Métricas promediadas sobre todos los joints.
 
 **Move to 0°:**
 - Overshoot: 0.09%
-- Settling Time: 3.664s
+- Settling Time: 3.662s
 - Rise Time: 3.382s
-- RMSE: 51.66°
-- Max Velocity: 98.5°/s
+- RMSE: 51.38°
+- Max Velocity: 110.9°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -879,11 +879,11 @@ Métricas promediadas sobre todos los joints.
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.45%
-- Settling Time: 3.680s
-- Rise Time: 3.374s
-- RMSE: 51.60°
-- Max Velocity: 69.0°/s
+- Overshoot: 0.59%
+- Settling Time: 3.686s
+- Rise Time: 3.390s
+- RMSE: 51.71°
+- Max Velocity: 85.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -896,10 +896,10 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 5.3°/s
+- Max Velocity: 5.6°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Wrist Roll
@@ -913,7 +913,7 @@ Métricas promediadas sobre todos los joints.
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.02°
+- RMSE: 0.03°
 
 
 ### PI_4
@@ -928,17 +928,17 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 0.2°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.10%
-- Settling Time: 3.662s
+- Overshoot: 0.09%
+- Settling Time: 3.664s
 - Rise Time: 3.378s
-- RMSE: 51.66°
-- Max Velocity: 86.6°/s
+- RMSE: 51.67°
+- Max Velocity: 87.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -947,15 +947,15 @@ Métricas promediadas sobre todos los joints.
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.12%
-- Settling Time: 3.658s
-- Rise Time: 3.360s
-- RMSE: 51.54°
-- Max Velocity: 57.8°/s
+- Overshoot: 0.13%
+- Settling Time: 3.662s
+- Rise Time: 3.352s
+- RMSE: 51.11°
+- Max Velocity: 67.1°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
-- RMSE: 0.03°
+- RMSE: 0.04°
 
 #### Wrist Flex
 
@@ -964,7 +964,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 5.3°/s
+- Max Velocity: 5.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -996,17 +996,17 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 0.2°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.09%
-- Settling Time: 3.662s
-- Rise Time: 3.384s
-- RMSE: 51.52°
-- Max Velocity: 113.9°/s
+- Overshoot: 0.08%
+- Settling Time: 3.660s
+- Rise Time: 3.376s
+- RMSE: 51.60°
+- Max Velocity: 87.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -1017,9 +1017,9 @@ Métricas promediadas sobre todos los joints.
 **Move to 0°:**
 - Overshoot: 0.23%
 - Settling Time: 3.670s
-- Rise Time: 3.374s
-- RMSE: 51.72°
-- Max Velocity: 61.0°/s
+- Rise Time: 3.372s
+- RMSE: 51.69°
+- Max Velocity: 59.6°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
@@ -1045,11 +1045,11 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 1.4°/s
+- Max Velocity: 1.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.02°
+- RMSE: 0.03°
 
 
 ### P_1
@@ -1064,17 +1064,17 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 0.2°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.03°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.03%
-- Settling Time: 3.600s
-- Rise Time: 3.320s
-- RMSE: 50.52°
-- Max Velocity: 114.4°/s
+- Overshoot: 0.01%
+- Settling Time: 3.638s
+- Rise Time: 3.352s
+- RMSE: 51.34°
+- Max Velocity: 88.7°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1083,11 +1083,11 @@ Métricas promediadas sobre todos los joints.
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.06%
-- Settling Time: 3.632s
-- Rise Time: 3.334s
-- RMSE: 51.20°
-- Max Velocity: 64.2°/s
+- Overshoot: 0.04%
+- Settling Time: 3.604s
+- Rise Time: 3.298s
+- RMSE: 50.63°
+- Max Velocity: 67.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1100,10 +1100,10 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 5.4°/s
+- Max Velocity: 5.5°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Wrist Roll
@@ -1132,30 +1132,30 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 0.2°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.02°
+- Steady-State Error: 0.03°
 - RMSE: 0.03°
 
 #### Shoulder Lift
 
 **Move to 0°:**
 - Overshoot: 0.02%
-- Settling Time: 3.452s
-- Rise Time: 3.166s
-- RMSE: 46.83°
-- Max Velocity: 167.3°/s
+- Settling Time: 3.622s
+- Rise Time: 3.338s
+- RMSE: 50.99°
+- Max Velocity: 102.0°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
-- RMSE: 0.05°
+- RMSE: 0.04°
 
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.06%
-- Settling Time: 3.554s
-- Rise Time: 3.228s
-- RMSE: 49.57°
-- Max Velocity: 85.3°/s
+- Overshoot: 0.07%
+- Settling Time: 3.594s
+- Rise Time: 3.286s
+- RMSE: 50.45°
+- Max Velocity: 71.4°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1171,7 +1171,7 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 5.4°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Wrist Roll
@@ -1206,11 +1206,11 @@ Métricas promediadas sobre todos los joints.
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.01%
-- Settling Time: 3.636s
-- Rise Time: 3.352s
-- RMSE: 51.31°
-- Max Velocity: 89.9°/s
+- Overshoot: 0.04%
+- Settling Time: 3.602s
+- Rise Time: 3.320s
+- RMSE: 50.54°
+- Max Velocity: 113.5°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1219,11 +1219,11 @@ Métricas promediadas sobre todos los joints.
 #### Elbow Flex
 
 **Move to 0°:**
-- Overshoot: 0.07%
-- Settling Time: 3.646s
-- Rise Time: 3.352s
-- RMSE: 51.51°
-- Max Velocity: 56.6°/s
+- Overshoot: 0.08%
+- Settling Time: 3.642s
+- Rise Time: 3.344s
+- RMSE: 51.40°
+- Max Velocity: 60.6°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1239,7 +1239,7 @@ Métricas promediadas sobre todos los joints.
 - Max Velocity: 5.5°/s
 
 **Hold 0°:**
-- Steady-State Error: 0.01°
+- Steady-State Error: 0.02°
 - RMSE: 0.03°
 
 #### Wrist Roll
@@ -1269,16 +1269,16 @@ Métricas promediadas sobre todos los joints.
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.03°
+- RMSE: 0.02°
 
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.01%
-- Settling Time: 3.602s
-- Rise Time: 3.322s
-- RMSE: 50.57°
-- Max Velocity: 114.1°/s
+- Overshoot: 0.00%
+- Settling Time: 3.610s
+- Rise Time: 3.328s
+- RMSE: 50.74°
+- Max Velocity: 109.2°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1288,10 +1288,10 @@ Métricas promediadas sobre todos los joints.
 
 **Move to 0°:**
 - Overshoot: 0.06%
-- Settling Time: 3.524s
-- Rise Time: 3.202s
-- RMSE: 49.20°
-- Max Velocity: 82.0°/s
+- Settling Time: 3.610s
+- Rise Time: 3.306s
+- RMSE: 50.75°
+- Max Velocity: 69.6°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1304,7 +1304,7 @@ Métricas promediadas sobre todos los joints.
 - Settling Time: 0.000s
 - Rise Time: 0.000s
 - RMSE: 0.03°
-- Max Velocity: 5.4°/s
+- Max Velocity: 5.3°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
@@ -1337,33 +1337,33 @@ Métricas promediadas sobre todos los joints.
 
 **Hold 0°:**
 - Steady-State Error: 0.02°
-- RMSE: 0.02°
+- RMSE: 0.03°
 
 #### Shoulder Lift
 
 **Move to 0°:**
-- Overshoot: 0.01%
-- Settling Time: 3.600s
-- Rise Time: 3.318s
-- RMSE: 50.45°
-- Max Velocity: 117.2°/s
-
-**Hold 0°:**
-- Steady-State Error: 0.01°
-- RMSE: 0.05°
-
-#### Elbow Flex
-
-**Move to 0°:**
-- Overshoot: 0.06%
-- Settling Time: 3.468s
-- Rise Time: 3.144s
-- RMSE: 48.35°
-- Max Velocity: 86.7°/s
+- Overshoot: 0.02%
+- Settling Time: 3.624s
+- Rise Time: 3.342s
+- RMSE: 51.05°
+- Max Velocity: 99.3°/s
 
 **Hold 0°:**
 - Steady-State Error: 0.01°
 - RMSE: 0.04°
+
+#### Elbow Flex
+
+**Move to 0°:**
+- Overshoot: 0.07%
+- Settling Time: 3.644s
+- Rise Time: 3.348s
+- RMSE: 51.46°
+- Max Velocity: 58.4°/s
+
+**Hold 0°:**
+- Steady-State Error: 0.01°
+- RMSE: 0.03°
 
 #### Wrist Flex
 

@@ -121,7 +121,7 @@ python3 plot_rubric_results.py \
     --output "$PLOTS_DIR/" \
     --config "$CONFIG_FILE"
 
-PLOT_COUNT=$(ls -1 "$PLOTS_DIR"/plot_*.html 2>/dev/null | wc -l)
+PLOT_COUNT=$(ls -1 "$PLOTS_DIR"/plot_*.png 2>/dev/null | wc -l)
 echo ""
 echo -e "${GREEN}Plots created: $PLOT_COUNT${NC}"
 echo ""
@@ -155,7 +155,7 @@ echo "Total time: ${TOTAL_DURATION}s (~$((TOTAL_DURATION / 60)) minutes)"
 echo ""
 echo "Files generated:"
 echo "  $LOGS_DIR/ → $CSV_COUNT CSVs"
-echo "  $PLOTS_DIR/ → $PLOT_COUNT HTMLs + dashboard.html"
+echo "  $PLOTS_DIR/ → $PLOT_COUNT PNGs + dashboard.html"
 echo "  $METRICS_FILE → Metrics table"
 echo "  $METRICS_JSON → JSON data"
 echo ""

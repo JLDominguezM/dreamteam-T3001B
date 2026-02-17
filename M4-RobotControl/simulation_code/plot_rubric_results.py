@@ -1,30 +1,36 @@
 #!/usr/bin/env python3
 """
-Generate interactive Plotly HTML plots for each PID experiment.
+Generate PNG plots for each PID experiment and a combined HTML dashboard.
 
-One HTML plot per experiment showing the 5 joints:
+One PNG plot per experiment showing the 5 joints:
 - Current position (solid line)
 - Target (dashed line)
 - Phases marked with background colors
+- Title with PID gains per joint
 
 Usage:
-    python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/
+    python3 plot_rubric_results.py --input logs_rubrica/ --output plots_rubrica/ --config configs_rubric.json
 """
 
 import argparse
+import base64
 import json
 import sys
 from pathlib import Path
+from io import BytesIO
+
 import pandas as pd
-import plotly.graph_objects as go
-from typing import Dict
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 JOINT_COLORS = {
-    "shoulder_pan": "#FF6B6B",
-    "shoulder_lift": "#4ECDC4",
-    "elbow_flex": "#95E1D3",
-    "wrist_flex": "#F38181",
-    "wrist_roll": "#AA96DA",
+    "shoulder_pan": "#e74c3c",
+    "shoulder_lift": "#2980b9",
+    "elbow_flex": "#27ae60",
+    "wrist_flex": "#f39c12",
+    "wrist_roll": "#8e44ad",
 }
 
 JOINT_LABELS = {
@@ -36,10 +42,10 @@ JOINT_LABELS = {
 }
 
 PHASE_COLORS = {
-    "move_to_zero": "rgba(255,200,200,0.25)",
-    "hold_zero": "rgba(200,220,255,0.25)",
-    "return_home": "rgba(200,255,200,0.25)",
-    "hold_home": "rgba(255,245,200,0.25)",
+    "move_to_zero": (1.0, 0.8, 0.8, 0.25),
+    "hold_zero": (0.8, 0.85, 1.0, 0.25),
+    "return_home": (0.8, 1.0, 0.8, 0.25),
+    "hold_home": (1.0, 0.96, 0.8, 0.25),
 }
 
 PHASE_LABELS = {
@@ -49,12 +55,12 @@ PHASE_LABELS = {
     "hold_home": "Hold Home",
 }
 
+JOINT_NAMES = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll")
 
-def detect_phases(df: pd.DataFrame) -> Dict[str, tuple]:
-    """Detect the 4 phases of the experiment (equal duration)"""
+
+def detect_phases(df):
     total_time = df["time"].max()
     phase_duration = total_time / 4.0
-
     return {
         "move_to_zero": (0.0, phase_duration),
         "hold_zero": (phase_duration, 2 * phase_duration),
@@ -63,19 +69,16 @@ def detect_phases(df: pd.DataFrame) -> Dict[str, tuple]:
     }
 
 
-def load_experiment_csv(csv_path: Path) -> pd.DataFrame:
+def load_experiment_csv(csv_path):
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV not found: {csv_path}")
-
     df = pd.read_csv(csv_path)
     if "time" not in df.columns:
-        raise ValueError(f"CSV missing 'time' column")
-
+        raise ValueError("CSV missing 'time' column")
     return df
 
 
-def load_gains_from_config(config_path: Path, combo_id: str) -> dict | None:
-    """Load gains_per_joint for a specific combo_id from the config JSON."""
+def load_gains_from_config(config_path, combo_id):
     if not config_path.exists():
         return None
     try:
@@ -89,141 +92,104 @@ def load_gains_from_config(config_path: Path, combo_id: str) -> dict | None:
     return None
 
 
-def plot_experiment(
-    df: pd.DataFrame,
-    combo_id: str,
-    output_path: Path,
-    gains: dict | None = None,
-    joint_names=("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"),
-):
-    """Generate interactive Plotly HTML plot for an experiment."""
+def build_gains_title(combo_id, gains):
+    """Build a multi-line title string showing PID gains per joint."""
+    family = combo_id.split("_")[0]
+    title = f"Experiment: {combo_id}  (Family: {family})\n"
+    if gains:
+        parts = []
+        for jn in JOINT_NAMES:
+            if jn in gains:
+                g = gains[jn]
+                label = JOINT_LABELS.get(jn, jn)
+                active = []
+                if g["kp"] > 0:
+                    active.append(f"Kp={g['kp']:.1f}")
+                if g["ki"] > 0:
+                    active.append(f"Ki={g['ki']:.1f}")
+                if g["kd"] > 0:
+                    active.append(f"Kd={g['kd']:.1f}")
+                parts.append(f"{label}: {', '.join(active) if active else 'all=0'}")
+        title += "  |  ".join(parts)
+    return title
+
+
+def plot_experiment_png(df, combo_id, output_path, gains=None):
+    """Generate a PNG plot for one experiment using matplotlib."""
 
     phases = detect_phases(df)
-    fig = go.Figure()
+    fig, ax = plt.subplots(figsize=(14, 7))
 
-    # Phase background rectangles
+    # Phase background
     for phase_name, (t_start, t_end) in phases.items():
-        fig.add_vrect(
-            x0=t_start, x1=t_end,
-            fillcolor=PHASE_COLORS[phase_name],
-            layer="below",
-            line_width=0,
-            annotation_text=PHASE_LABELS[phase_name],
-            annotation_position="top left",
-            annotation_font_size=10,
-            annotation_font_color="gray",
-        )
+        color = PHASE_COLORS[phase_name]
+        ax.axvspan(t_start, t_end, color=color, zorder=0)
+        mid = (t_start + t_end) / 2.0
+        ax.text(mid, ax.get_ylim()[0] if ax.get_ylim()[0] != 0 else -5, PHASE_LABELS[phase_name],
+                ha='center', va='bottom', fontsize=8, color='gray', alpha=0.7)
+
+    # Convert time to numpy array for matplotlib compatibility
+    time_arr = df["time"].values
 
     # Plot each joint
-    for joint_name in joint_names:
+    for joint_name in JOINT_NAMES:
         pos_col = joint_name
         target_col = f"target_{joint_name}"
-
         if pos_col not in df.columns:
             continue
 
         color = JOINT_COLORS.get(joint_name, "#333333")
         label = JOINT_LABELS.get(joint_name, joint_name)
 
-        # Build hover text with gains info
-        gain_text = ""
-        if gains and joint_name in gains:
-            g = gains[joint_name]
-            gain_text = f"<br>Kp={g['kp']}, Ki={g['ki']}, Kd={g['kd']}"
-
         # Actual position (solid)
-        fig.add_trace(go.Scatter(
-            x=df["time"],
-            y=df[pos_col],
-            mode="lines",
-            name=f"{label} (actual)",
-            line=dict(color=color, width=2),
-            hovertemplate=f"{label}<br>t=%{{x:.3f}}s<br>pos=%{{y:.2f}}°{gain_text}<extra></extra>",
-        ))
+        ax.plot(time_arr, df[pos_col].values, color=color, linewidth=2, label=f"{label} (actual)")
 
         # Target (dashed)
         if target_col in df.columns:
-            fig.add_trace(go.Scatter(
-                x=df["time"],
-                y=df[target_col],
-                mode="lines",
-                name=f"{label} (target)",
-                line=dict(color=color, width=1.5, dash="dash"),
-                opacity=0.5,
-                hovertemplate=f"{label} target<br>t=%{{x:.3f}}s<br>target=%{{y:.2f}}°<extra></extra>",
-            ))
+            ax.plot(time_arr, df[target_col].values, color=color, linewidth=1.2,
+                    linestyle="--", alpha=0.5, label=f"{label} (target)")
 
-    # Build subtitle with gains
-    subtitle = ""
-    if gains:
-        family = combo_id.split("_")[0]
-        parts = []
-        for jn in joint_names:
-            if jn in gains:
-                g = gains[jn]
-                active = []
-                if g["kp"] > 0: active.append(f"Kp={g['kp']}")
-                if g["ki"] > 0: active.append(f"Ki={g['ki']}")
-                if g["kd"] > 0: active.append(f"Kd={g['kd']}")
-                parts.append(f"{JOINT_LABELS.get(jn, jn)}: {', '.join(active) if active else 'all=0'}")
-        subtitle = "<br>".join(parts)
+    # Phase labels on top
+    for phase_name, (t_start, t_end) in phases.items():
+        mid = (t_start + t_end) / 2.0
+        ax.text(mid, ax.get_ylim()[1] * 0.98 if ax.get_ylim()[1] != 0 else 95,
+                PHASE_LABELS[phase_name],
+                ha='center', va='top', fontsize=8, color='gray',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
 
-    fig.update_layout(
-        title=dict(
-            text=f"Experiment: {combo_id}<br><span style='font-size:11px;color:gray'>{subtitle}</span>",
-            font_size=16,
-        ),
-        xaxis_title="Time (s)",
-        yaxis_title="Position (degrees)",
-        template="plotly_white",
-        hovermode="x unified",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="center",
-            x=0.5,
-            font_size=10,
-        ),
-        margin=dict(l=60, r=30, t=120, b=50),
-        height=600,
-    )
+    # Title with gains
+    title = build_gains_title(combo_id, gains)
+    ax.set_title(title, fontsize=10, fontweight='bold', pad=15)
 
-    fig.update_xaxes(
-        range=[df["time"].min(), df["time"].max()],
-        gridcolor="rgba(0,0,0,0.1)",
-        gridwidth=0.5,
-    )
-    fig.update_yaxes(
-        gridcolor="rgba(0,0,0,0.1)",
-        gridwidth=0.5,
-    )
+    ax.set_xlabel("Time (s)", fontsize=11)
+    ax.set_ylabel("Position (degrees)", fontsize=11)
+    ax.set_xlim(df["time"].min(), df["time"].max())
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='upper right', fontsize=8, ncol=2, framealpha=0.9)
 
+    plt.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.write_html(str(output_path), include_plotlyjs="cdn")
+    fig.savefig(str(output_path), dpi=150, bbox_inches='tight')
+    plt.close(fig)
     print(f"Saved: {output_path}")
 
 
-def build_experiment_figure(
-    df: pd.DataFrame,
-    combo_id: str,
-    gains: dict | None = None,
-    joint_names=("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"),
-) -> go.Figure:
-    """Build a Plotly figure for one experiment (reusable for dashboard)."""
+def plot_to_base64(df, combo_id, gains=None):
+    """Generate a PNG plot and return as base64 string."""
 
     phases = detect_phases(df)
-    fig = go.Figure()
+    fig, ax = plt.subplots(figsize=(14, 7))
 
+    # Phase background
     for phase_name, (t_start, t_end) in phases.items():
-        fig.add_vrect(
-            x0=t_start, x1=t_end,
-            fillcolor=PHASE_COLORS[phase_name],
-            layer="below",
-            line_width=0,
-        )
+        color = PHASE_COLORS[phase_name]
+        ax.axvspan(t_start, t_end, color=color, zorder=0)
 
-    for joint_name in joint_names:
+    # Convert time to numpy array for matplotlib compatibility
+    time_arr = df["time"].values
+
+    # Plot each joint
+    for joint_name in JOINT_NAMES:
         pos_col = joint_name
         target_col = f"target_{joint_name}"
         if pos_col not in df.columns:
@@ -232,72 +198,42 @@ def build_experiment_figure(
         color = JOINT_COLORS.get(joint_name, "#333333")
         label = JOINT_LABELS.get(joint_name, joint_name)
 
-        gain_text = ""
-        if gains and joint_name in gains:
-            g = gains[joint_name]
-            gain_text = f"<br>Kp={g['kp']}, Ki={g['ki']}, Kd={g['kd']}"
-
-        fig.add_trace(go.Scatter(
-            x=df["time"], y=df[pos_col],
-            mode="lines",
-            name=f"{label}",
-            line=dict(color=color, width=2),
-            hovertemplate=f"{label}<br>t=%{{x:.3f}}s<br>pos=%{{y:.2f}}°{gain_text}<extra></extra>",
-        ))
-
+        ax.plot(time_arr, df[pos_col].values, color=color, linewidth=2, label=f"{label} (actual)")
         if target_col in df.columns:
-            fig.add_trace(go.Scatter(
-                x=df["time"], y=df[target_col],
-                mode="lines",
-                name=f"{label} (target)",
-                line=dict(color=color, width=1.5, dash="dash"),
-                opacity=0.4,
-                showlegend=False,
-                hoverinfo="skip",
-            ))
+            ax.plot(time_arr, df[target_col].values, color=color, linewidth=1.2,
+                    linestyle="--", alpha=0.5, label=f"{label} (target)")
 
-    # Gains subtitle
-    subtitle = combo_id
-    if gains:
-        parts = []
-        for jn in joint_names:
-            if jn in gains:
-                g = gains[jn]
-                active = []
-                if g["kp"] > 0: active.append(f"Kp={g['kp']}")
-                if g["ki"] > 0: active.append(f"Ki={g['ki']}")
-                if g["kd"] > 0: active.append(f"Kd={g['kd']}")
-                short = JOINT_LABELS.get(jn, jn).split()[0][:4]
-                parts.append(f"{short}: {', '.join(active)}" if active else f"{short}: 0")
-        subtitle = f"{combo_id} | " + " | ".join(parts)
+    # Phase labels
+    for phase_name, (t_start, t_end) in phases.items():
+        mid = (t_start + t_end) / 2.0
+        ylims = ax.get_ylim()
+        ax.text(mid, ylims[1] - (ylims[1] - ylims[0]) * 0.02,
+                PHASE_LABELS[phase_name],
+                ha='center', va='top', fontsize=8, color='gray',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
 
-    fig.update_layout(
-        title=dict(text=subtitle, font_size=12),
-        xaxis_title="Time (s)",
-        yaxis_title="Position (°)",
-        template="plotly_white",
-        hovermode="x unified",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font_size=9),
-        margin=dict(l=50, r=20, t=60, b=40),
-        height=450,
-    )
+    title = build_gains_title(combo_id, gains)
+    ax.set_title(title, fontsize=10, fontweight='bold', pad=15)
+    ax.set_xlabel("Time (s)", fontsize=11)
+    ax.set_ylabel("Position (degrees)", fontsize=11)
+    ax.set_xlim(df["time"].min(), df["time"].max())
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='upper right', fontsize=8, ncol=2, framealpha=0.9)
 
-    fig.update_xaxes(range=[df["time"].min(), df["time"].max()], gridcolor="rgba(0,0,0,0.08)")
-    fig.update_yaxes(gridcolor="rgba(0,0,0,0.08)")
+    plt.tight_layout()
 
-    return fig
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode('utf-8')
 
 
-def generate_dashboard(
-    csv_files: list[Path],
-    output_path: Path,
-    config_path: Path,
-):
-    """Generate a single HTML dashboard with all experiments grouped by family."""
+def generate_dashboard(csv_files, output_path, config_path):
+    """Generate a single HTML dashboard with all experiments as embedded PNG images."""
 
-    # Group CSV files by family
     families_order = ["P", "PD", "PI", "PID"]
-    family_groups: dict[str, list[tuple[str, Path]]] = {f: [] for f in families_order}
+    family_groups = {f: [] for f in families_order}
 
     for csv_path in csv_files:
         combo_id = csv_path.stem.replace("log_", "")
@@ -306,75 +242,87 @@ def generate_dashboard(
             family_groups[family].append((combo_id, csv_path))
 
     family_descriptions = {
-        "P": "Solo Proporcional (Ki=0, Kd=0) — Error permanente, sin damping",
-        "PD": "Proporcional + Derivativo (Ki=0) — Con damping, error permanente",
-        "PI": "Proporcional + Integral (Kd=0) — Elimina error SS, puede oscilar",
-        "PID": "PID Completo — Elimina error SS con damping",
+        "P": "Proportional only (Ki=0, Kd=0) — Steady-state error, no damping",
+        "PD": "Proportional + Derivative (Ki=0) — Damping, steady-state error remains",
+        "PI": "Proportional + Integral (Kd=0) — Eliminates SS error, may oscillate",
+        "PID": "Full PID — Eliminates SS error with damping",
     }
 
-    # Build HTML with embedded Plotly figures
+    family_colors = {
+        "P": "#e74c3c",
+        "PD": "#e67e22",
+        "PI": "#27ae60",
+        "PID": "#2980b9",
+    }
+
     html_parts = []
-    html_parts.append(f"""<!DOCTYPE html>
-<html lang="es">
+    html_parts.append("""<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PID Experiments Dashboard - SO-101</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #333; }}
-        .header {{
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #333; }
+        .header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white; padding: 30px 40px; text-align: center;
-        }}
-        .header h1 {{ font-size: 28px; margin-bottom: 8px; }}
-        .header p {{ font-size: 14px; opacity: 0.85; }}
-        .nav {{
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.85; }
+        .nav {
             background: #2c3e50; padding: 12px 40px;
             display: flex; gap: 12px; justify-content: center;
             position: sticky; top: 0; z-index: 100;
-        }}
-        .nav a {{
+        }
+        .nav a {
             color: white; text-decoration: none; padding: 8px 20px;
             border-radius: 20px; font-size: 14px; font-weight: 600;
             transition: background 0.2s;
-        }}
-        .nav a:hover {{ background: rgba(255,255,255,0.15); }}
-        .nav a.P {{ background: #e74c3c; }}
-        .nav a.PD {{ background: #e67e22; }}
-        .nav a.PI {{ background: #27ae60; }}
-        .nav a.PID {{ background: #2980b9; }}
-        .family-section {{ padding: 30px 40px; }}
-        .family-header {{
+        }
+        .nav a:hover { opacity: 0.85; }
+        .family-section { padding: 30px 40px; }
+        .family-header {
             display: flex; align-items: center; gap: 16px;
             margin-bottom: 20px; padding-bottom: 12px;
             border-bottom: 3px solid #ddd;
-        }}
-        .family-badge {{
+        }
+        .family-badge {
             font-size: 24px; font-weight: 800; color: white;
             padding: 8px 20px; border-radius: 8px; min-width: 80px; text-align: center;
-        }}
-        .family-badge.P {{ background: #e74c3c; }}
-        .family-badge.PD {{ background: #e67e22; }}
-        .family-badge.PI {{ background: #27ae60; }}
-        .family-badge.PID {{ background: #2980b9; }}
-        .family-desc {{ font-size: 15px; color: #666; }}
-        .plots-grid {{
+        }
+        .family-desc { font-size: 15px; color: #666; }
+        .plots-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            grid-template-columns: 1fr;
             gap: 20px;
-        }}
-        .plot-card {{
+        }
+        .plot-card {
             background: white; border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }}
-        .plot-container {{ width: 100%; }}
-        .footer {{
+            overflow: hidden; padding: 10px;
+        }
+        .plot-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .gains-table {
+            width: 100%; border-collapse: collapse; margin: 8px 0;
+            font-size: 12px;
+        }
+        .gains-table th {
+            background: #f0f0f0; padding: 4px 8px; text-align: center;
+            border: 1px solid #ddd; font-weight: 600;
+        }
+        .gains-table td {
+            padding: 4px 8px; text-align: center; border: 1px solid #ddd;
+        }
+        .footer {
             text-align: center; padding: 20px;
             color: #999; font-size: 12px; margin-top: 30px;
-        }}
+        }
     </style>
 </head>
 <body>
@@ -383,24 +331,28 @@ def generate_dashboard(
         <p>SO-101 Robot | 20 experiments | 4 families (P, PD, PI, PID) | Random gains [0, 300] | 15s per experiment</p>
     </div>
     <div class="nav">
-        <a href="#family-P" class="P">P (5)</a>
-        <a href="#family-PD" class="PD">PD (5)</a>
-        <a href="#family-PI" class="PI">PI (5)</a>
-        <a href="#family-PID" class="PID">PID (5)</a>
-    </div>
 """)
 
-    plot_id = 0
+    # Navigation links
+    for family in families_order:
+        color = family_colors[family]
+        html_parts.append(f'        <a href="#family-{family}" style="background:{color};">{family} (5)</a>\n')
+
+    html_parts.append("    </div>\n")
+
+    # Family sections
     for family in families_order:
         experiments = family_groups[family]
         if not experiments:
             continue
 
         desc = family_descriptions.get(family, "")
+        color = family_colors[family]
+
         html_parts.append(f"""
     <div class="family-section" id="family-{family}">
         <div class="family-header">
-            <span class="family-badge {family}">{family}</span>
+            <span class="family-badge" style="background:{color};">{family}</span>
             <span class="family-desc">{desc}</span>
         </div>
         <div class="plots-grid">
@@ -410,23 +362,28 @@ def generate_dashboard(
             try:
                 df = load_experiment_csv(csv_path)
                 gains = load_gains_from_config(config_path, combo_id)
-                fig = build_experiment_figure(df, combo_id, gains=gains)
 
-                div_id = f"plot-{plot_id}"
-                plot_json = fig.to_json()
+                # Generate base64 PNG
+                img_b64 = plot_to_base64(df, combo_id, gains=gains)
+
+                # Build gains table
+                gains_html = ""
+                if gains:
+                    gains_html = '<table class="gains-table"><tr><th>Joint</th><th>Kp</th><th>Ki</th><th>Kd</th></tr>'
+                    for jn in JOINT_NAMES:
+                        if jn in gains:
+                            g = gains[jn]
+                            label = JOINT_LABELS.get(jn, jn)
+                            gains_html += f'<tr><td>{label}</td><td>{g["kp"]:.1f}</td><td>{g["ki"]:.1f}</td><td>{g["kd"]:.1f}</td></tr>'
+                    gains_html += '</table>'
 
                 html_parts.append(f"""
             <div class="plot-card">
-                <div class="plot-container" id="{div_id}"></div>
-                <script>
-                    (function() {{
-                        var data = {plot_json};
-                        Plotly.newPlot('{div_id}', data.data, data.layout, {{responsive: true}});
-                    }})();
-                </script>
+                {gains_html}
+                <img src="data:image/png;base64,{img_b64}" alt="{combo_id}">
             </div>
 """)
-                plot_id += 1
+                print(f"  Dashboard: embedded {combo_id}")
             except Exception as e:
                 html_parts.append(f'            <div class="plot-card" style="padding:30px;color:red;">Error: {combo_id} - {e}</div>\n')
 
@@ -434,7 +391,7 @@ def generate_dashboard(
 
     html_parts.append("""
     <div class="footer">
-        PID Experiments Pipeline - T3001B | Generated with Plotly
+        PID Experiments Pipeline - T3001B | Generated with Matplotlib
     </div>
 </body>
 </html>
@@ -449,7 +406,7 @@ def generate_dashboard(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate interactive Plotly HTML plots for rubric experiments"
+        description="Generate PNG plots and HTML dashboard for rubric experiments"
     )
     parser.add_argument(
         '--input', type=str, required=True,
@@ -457,7 +414,7 @@ def main():
     )
     parser.add_argument(
         '--output', type=str, required=True,
-        help='Directory for output HTML plots'
+        help='Directory for output PNG plots and dashboard'
     )
     parser.add_argument(
         '--config', type=str, default='configs_rubric.json',
@@ -502,7 +459,7 @@ def main():
         ]
 
     print(f"\n{'='*80}")
-    print(f"Generating interactive HTML plots")
+    print(f"Generating PNG plots + HTML dashboard")
     print(f"{'='*80}")
     print(f"Input:  {input_dir}")
     print(f"Output: {output_dir}")
@@ -514,14 +471,14 @@ def main():
 
     for i, csv_path in enumerate(csv_files, 1):
         combo_id = csv_path.stem.replace("log_", "")
-        output_path = output_dir / f"plot_{combo_id}.html"
+        output_path = output_dir / f"plot_{combo_id}.png"
 
         print(f"[{i}/{len(csv_files)}] {combo_id}...", end=" ")
 
         try:
             df = load_experiment_csv(csv_path)
             gains = load_gains_from_config(config_path, combo_id)
-            plot_experiment(df, combo_id, output_path, gains=gains)
+            plot_experiment_png(df, combo_id, output_path, gains=gains)
             success += 1
         except Exception as e:
             print(f"ERROR: {e}")
@@ -546,7 +503,6 @@ def main():
         print(f"\nGenerating combined dashboard...")
         dashboard_path = output_dir / "dashboard.html"
         try:
-            # Use all CSVs that succeeded (re-gather from output dir)
             all_csvs = sorted(input_dir.glob("log_*.csv"))
             generate_dashboard(all_csvs, dashboard_path, config_path)
         except Exception as e:
@@ -556,7 +512,7 @@ def main():
 
     if success == len(csv_files):
         print(f"\nAll plots generated")
-        print(f"HTML plots at: {output_dir.resolve()}")
+        print(f"PNG plots at: {output_dir.resolve()}")
         print(f"Dashboard: {(output_dir / 'dashboard.html').resolve()}\n")
         sys.exit(0)
     else:
