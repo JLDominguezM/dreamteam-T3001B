@@ -1,8 +1,8 @@
 [
   {
-    "combo_id": "P_1_MuyBajo",
+    "combo_id": "P_1_VeryLow",
     "family": "P",
-    "description": "Kp muy bajo, respuesta lenta",
+    "description": "Very low Kp, slow response",
     "kp_base": 300,
     "ki_base": 0.0,
     "kd_base": 0.0,
@@ -33,12 +33,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Sin Ki: error permanente. Velocidad lenta"
+    "expected_behavior": "No Ki: steady-state error. Slow speed"
   },
   {
-    "combo_id": "P_2_Bajo",
+    "combo_id": "P_2_Low",
     "family": "P",
-    "description": "Kp bajo, suave pero lento",
+    "description": "Low Kp, smooth but slow",
     "kp_base": 600,
     "ki_base": 0.0,
     "kd_base": 0.0,
@@ -69,12 +69,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Sin Ki: error permanente. Velocidad lenta"
+    "expected_behavior": "No Ki: steady-state error. Slow speed"
   },
   {
-    "combo_id": "P_3_Medio",
+    "combo_id": "P_3_Medium",
     "family": "P",
-    "description": "Kp medio, balance",
+    "description": "Medium Kp, balanced",
     "kp_base": 1000,
     "ki_base": 0.0,
     "kd_base": 0.0,
@@ -105,12 +105,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Sin Ki: error permanente. Velocidad media"
+    "expected_behavior": "No Ki: steady-state error. Medium speed"
   },
   {
-    "combo_id": "P_4_Alto",
+    "combo_id": "P_4_High",
     "family": "P",
-    "description": "Kp alto, r\u00e1pido con overshoot",
+    "description": "High Kp, fast with overshoot",
     "kp_base": 1500,
     "ki_base": 0.0,
     "kd_base": 0.0,
@@ -141,12 +141,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Sin Ki: error permanente. Velocidad r\u00e1pida"
+    "expected_behavior": "No Ki: steady-state error. Fast speed"
   },
   {
-    "combo_id": "P_5_MuyAlto",
+    "combo_id": "P_5_VeryHigh",
     "family": "P",
-    "description": "Kp muy alto, riesgo de oscilaci\u00f3n",
+    "description": "Very high Kp, oscillation risk",
     "kp_base": 2500,
     "ki_base": 0.0,
     "kd_base": 0.0,
@@ -177,12 +177,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Sin Ki: error permanente. Velocidad r\u00e1pida"
+    "expected_behavior": "No Ki: steady-state error. Fast speed"
   },
   {
-    "combo_id": "PD_1_PocoDamp",
+    "combo_id": "PD_1_LightDamp",
     "family": "PD",
-    "description": "PD con poco damping, Kd bajo",
+    "description": "PD with light damping, low Kd",
     "kp_base": 1000,
     "ki_base": 0.0,
     "kd_base": 20,
@@ -213,12 +213,12 @@
         "kd": 16.0
       }
     },
-    "expected_behavior": "Mejor damping, error permanente sin Ki, ratio Kd/Kp=0.02"
+    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.02"
   },
   {
-    "combo_id": "PD_2_Critico",
+    "combo_id": "PD_2_Critical",
     "family": "PD",
-    "description": "PD amortiguamiento cr\u00edtico \u00f3ptimo",
+    "description": "PD optimal critical damping",
     "kp_base": 1000,
     "ki_base": 0.0,
     "kd_base": 50,
@@ -249,12 +249,12 @@
         "kd": 40.0
       }
     },
-    "expected_behavior": "Mejor damping, error permanente sin Ki, ratio Kd/Kp=0.05"
+    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.05"
   },
   {
     "combo_id": "PD_3_OverDamp",
     "family": "PD",
-    "description": "Sobreamortiguado, lento",
+    "description": "Overdamped, slow",
     "kp_base": 1000,
     "ki_base": 0.0,
     "kd_base": 100,
@@ -285,12 +285,12 @@
         "kd": 80.0
       }
     },
-    "expected_behavior": "Mejor damping, error permanente sin Ki, ratio Kd/Kp=0.10"
+    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.10"
   },
   {
-    "combo_id": "PD_4_Rigido",
+    "combo_id": "PD_4_Stiff",
     "family": "PD",
-    "description": "Kp y Kd altos, muy r\u00edgido",
+    "description": "High Kp and Kd, very stiff",
     "kp_base": 1800,
     "ki_base": 0.0,
     "kd_base": 90,
@@ -321,12 +321,12 @@
         "kd": 72.0
       }
     },
-    "expected_behavior": "Mejor damping, error permanente sin Ki, ratio Kd/Kp=0.05"
+    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.05"
   },
   {
-    "combo_id": "PD_5_ExcesivoKd",
+    "combo_id": "PD_5_ExcessiveKd",
     "family": "PD",
-    "description": "Kd muy alto, amplifica ruido",
+    "description": "Very high Kd, amplifies noise",
     "kp_base": 1200,
     "ki_base": 0.0,
     "kd_base": 180,
@@ -357,12 +357,12 @@
         "kd": 144.0
       }
     },
-    "expected_behavior": "Mejor damping, error permanente sin Ki, ratio Kd/Kp=0.15"
+    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.15"
   },
   {
-    "combo_id": "PI_1_KiBajo",
+    "combo_id": "PI_1_LowKi",
     "family": "PI",
-    "description": "Ki bajo, elimina error lentamente",
+    "description": "Low Ki, eliminates error slowly",
     "kp_base": 800,
     "ki_base": 40,
     "kd_base": 0.0,
@@ -393,12 +393,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Elimina error SS, sin Kd puede oscilar, Ki/Kp=0.05"
+    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.05"
   },
   {
-    "combo_id": "PI_2_KiMedio",
+    "combo_id": "PI_2_MediumKi",
     "family": "PI",
-    "description": "PI balanceado",
+    "description": "Balanced PI",
     "kp_base": 800,
     "ki_base": 80,
     "kd_base": 0.0,
@@ -429,12 +429,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Elimina error SS, sin Kd puede oscilar, Ki/Kp=0.10"
+    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.10"
   },
   {
-    "combo_id": "PI_3_KiAlto",
+    "combo_id": "PI_3_HighKi",
     "family": "PI",
-    "description": "Ki alto, puede saturar",
+    "description": "High Ki, may saturate",
     "kp_base": 800,
     "ki_base": 160,
     "kd_base": 0.0,
@@ -465,12 +465,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Elimina error SS, sin Kd puede oscilar, Ki/Kp=0.20"
+    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.20"
   },
   {
-    "combo_id": "PI_4_KpBajo_KiAlto",
+    "combo_id": "PI_4_LowKp_HighKi",
     "family": "PI",
-    "description": "Kp bajo, Ki alto, lento pero preciso",
+    "description": "Low Kp, high Ki, slow but precise",
     "kp_base": 500,
     "ki_base": 150,
     "kd_base": 0.0,
@@ -501,12 +501,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Elimina error SS, sin Kd puede oscilar, Ki/Kp=0.30"
+    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.30"
   },
   {
-    "combo_id": "PI_5_Agresivo",
+    "combo_id": "PI_5_Aggressive",
     "family": "PI",
-    "description": "Ambos altos, r\u00e1pido pero inestable",
+    "description": "Both high, fast but unstable",
     "kp_base": 1200,
     "ki_base": 240,
     "kd_base": 0.0,
@@ -537,12 +537,12 @@
         "kd": 0.0
       }
     },
-    "expected_behavior": "Elimina error SS, sin Kd puede oscilar, Ki/Kp=0.20"
+    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.20"
   },
   {
-    "combo_id": "PID_1_Conservador",
+    "combo_id": "PID_1_Conservative",
     "family": "PID",
-    "description": "Ganancias bajas, seguro",
+    "description": "Low gains, safe",
     "kp_base": 800,
     "ki_base": 80,
     "kd_base": 40,
@@ -573,12 +573,12 @@
         "kd": 32.0
       }
     },
-    "expected_behavior": "Los 3 t\u00e9rminos activos, elimina error SS y damping"
+    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
   },
   {
-    "combo_id": "PID_2_Balanceado",
+    "combo_id": "PID_2_Balanced",
     "family": "PID",
-    "description": "Uso general",
+    "description": "General purpose",
     "kp_base": 1200,
     "ki_base": 120,
     "kd_base": 60,
@@ -609,12 +609,12 @@
         "kd": 48.0
       }
     },
-    "expected_behavior": "Los 3 t\u00e9rminos activos, elimina error SS y damping"
+    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
   },
   {
-    "combo_id": "PID_3_Agresivo",
+    "combo_id": "PID_3_Aggressive",
     "family": "PID",
-    "description": "Respuesta r\u00e1pida",
+    "description": "Fast response",
     "kp_base": 1800,
     "ki_base": 180,
     "kd_base": 90,
@@ -645,12 +645,12 @@
         "kd": 72.0
       }
     },
-    "expected_behavior": "Los 3 t\u00e9rminos activos, elimina error SS y damping"
+    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
   },
   {
-    "combo_id": "PID_4_KiDominante",
+    "combo_id": "PID_4_KiDominant",
     "family": "PID",
-    "description": "Ki alto, riesgo de windup",
+    "description": "High Ki, windup risk",
     "kp_base": 2000,
     "ki_base": 250,
     "kd_base": 50,
@@ -681,12 +681,12 @@
         "kd": 40.0
       }
     },
-    "expected_behavior": "Los 3 t\u00e9rminos activos, elimina error SS y damping"
+    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
   },
   {
-    "combo_id": "PID_5_KdDominante",
+    "combo_id": "PID_5_KdDominant",
     "family": "PID",
-    "description": "Kd alto, muy amortiguado",
+    "description": "High Kd, heavily damped",
     "kp_base": 1000,
     "ki_base": 100,
     "kd_base": 150,
@@ -717,6 +717,6 @@
         "kd": 120.0
       }
     },
-    "expected_behavior": "Los 3 t\u00e9rminos activos, elimina error SS y damping"
+    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
   }
 ]
