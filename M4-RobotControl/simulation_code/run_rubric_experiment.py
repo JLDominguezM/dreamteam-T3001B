@@ -134,7 +134,9 @@ def run_experiment(
     print(f"{'='*80}")
     print(f"Family: {config['family']}")
     print(f"Description: {config['description']}")
-    print(f"Base gains: Kp={config['kp_base']}, Ki={config['ki_base']}, Kd={config['kd_base']}")
+    print(f"Gains per joint:")
+    for jn, g in config['gains_per_joint'].items():
+        print(f"  {jn}: Kp={g['kp']}, Ki={g['ki']}, Kd={g['kd']}")
     print(f"{'='*80}\n")
     
     # Load model
@@ -156,55 +158,58 @@ def run_experiment(
     # Create CSV logger
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     
+    # 4 phases of equal duration -> 15s total
+    phase_dur = 3.75
+
     # Start with target = ZERO_POSE_DEG (first phase)
     with CSVDataLogger(str(output_csv), joint_names, ZERO_POSE_DEG) as logger:
-        
-        # Phase 1: Move Home → 0° (2s)
-        print("Phase 1/4: Home → 0° (2.0s)")
+
+        # Phase 1: Move Home → 0°
+        print(f"Phase 1/4: Home → 0° ({phase_dur}s)")
         move_to_pose_pid(
             m, d, viewer=None,
             target_pose_deg=ZERO_POSE_DEG,
-            duration=2.0,
+            duration=phase_dur,
             realtime=realtime,
             joint_names=joint_names,
             pid=pid,
             perturb=perturb,
             plotter=logger,
         )
-        
-        # Phase 2: Hold 0° (2s)
-        print("Phase 2/4: Hold 0° (2.0s)")
+
+        # Phase 2: Hold 0°
+        print(f"Phase 2/4: Hold 0° ({phase_dur}s)")
         hold_position_pid(
             m, d, viewer=None,
             hold_pose_deg=ZERO_POSE_DEG,
-            duration=2.0,
+            duration=phase_dur,
             realtime=realtime,
             joint_names=joint_names,
             pid=pid,
             perturb=perturb,
             plotter=logger,
         )
-        
-        # Phase 3: Move 0° → Home (2s)
-        print("Phase 3/4: 0° → Home (2.0s)")
+
+        # Phase 3: Move 0° → Home
+        print(f"Phase 3/4: 0° → Home ({phase_dur}s)")
         logger.update_target(HOME_POSE_DEG)
         move_to_pose_pid(
             m, d, viewer=None,
             target_pose_deg=HOME_POSE_DEG,
-            duration=2.0,
+            duration=phase_dur,
             realtime=realtime,
             joint_names=joint_names,
             pid=pid,
             perturb=perturb,
             plotter=logger,
         )
-        
-        # Phase 4: Hold Home (2s)
-        print("Phase 4/4: Hold Home (2.0s)")
+
+        # Phase 4: Hold Home
+        print(f"Phase 4/4: Hold Home ({phase_dur}s)")
         hold_position_pid(
             m, d, viewer=None,
             hold_pose_deg=HOME_POSE_DEG,
-            duration=2.0,
+            duration=phase_dur,
             realtime=realtime,
             joint_names=joint_names,
             pid=pid,
