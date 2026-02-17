@@ -5,27 +5,27 @@
     "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 231.01,
+        "kp": 30.11,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 274.14,
+        "kp": 16.47,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 96.6,
+        "kp": 42.0,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 82.43,
+        "kp": 78.64,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 187.33,
+        "kp": 41.54,
         "ki": 0.0,
         "kd": 0.0
       }
@@ -38,27 +38,27 @@
     "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 41.3,
+        "kp": 7.46,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 172.42,
+        "kp": 44.75,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 84.62,
+        "kp": 58.95,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 134.31,
+        "kp": 82.13,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 185.87,
+        "kp": 9.99,
         "ki": 0.0,
         "kd": 0.0
       }
@@ -71,27 +71,27 @@
     "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 192.21,
+        "kp": 6.47,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 116.91,
+        "kp": 46.73,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 234.21,
+        "kp": 1.07,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 136.63,
+        "kp": 94.34,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 244.79,
+        "kp": 18.42,
         "ki": 0.0,
         "kd": 0.0
       }
@@ -104,27 +104,27 @@
     "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 280.63,
+        "kp": 83.98,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 136.33,
+        "kp": 1.67,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 106.66,
+        "kp": 29.75,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 259.71,
+        "kp": 46.86,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 124.35,
+        "kp": 39.82,
         "ki": 0.0,
         "kd": 0.0
       }
@@ -137,27 +137,27 @@
     "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 160.83,
+        "kp": 65.44,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 184.95,
+        "kp": 42.89,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 265.37,
+        "kp": 23.86,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 34.63,
+        "kp": 21.55,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 238.48,
+        "kp": 14.1,
         "ki": 0.0,
         "kd": 0.0
       }
@@ -170,29 +170,29 @@
     "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 103.6,
+        "kp": 74.21,
         "ki": 0.0,
-        "kd": 264.39
+        "kd": 72.22
       },
       "shoulder_lift": {
-        "kp": 6.44,
+        "kp": 94.11,
         "ki": 0.0,
-        "kd": 14.8
+        "kd": 36.21
       },
       "elbow_flex": {
-        "kp": 127.85,
+        "kp": 7.91,
         "ki": 0.0,
-        "kd": 288.94
+        "kd": 47.9
       },
       "wrist_flex": {
-        "kp": 219.52,
+        "kp": 5.09,
         "ki": 0.0,
-        "kd": 132.63
+        "kd": 2.42
       },
       "wrist_roll": {
-        "kp": 294.05,
+        "kp": 2.91,
         "ki": 0.0,
-        "kd": 9.82
+        "kd": 39.86
       }
     },
     "expected_behavior": "Mejor damping, error permanente sin Ki"
@@ -203,29 +203,29 @@
     "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 165.12,
+        "kp": 62.26,
         "ki": 0.0,
-        "kd": 202.61
+        "kd": 25.76
       },
       "shoulder_lift": {
-        "kp": 119.64,
+        "kp": 34.63,
         "ki": 0.0,
-        "kd": 198.8
+        "kd": 63.95
       },
       "elbow_flex": {
-        "kp": 3.62,
+        "kp": 31.97,
         "ki": 0.0,
-        "kd": 256.19
+        "kd": 19.77
       },
       "wrist_flex": {
-        "kp": 48.09,
+        "kp": 45.83,
         "ki": 0.0,
-        "kd": 13.25
+        "kd": 73.05
       },
       "wrist_roll": {
-        "kp": 280.94,
+        "kp": 35.48,
         "ki": 0.0,
-        "kd": 129.77
+        "kd": 16.72
       }
     },
     "expected_behavior": "Mejor damping, error permanente sin Ki"
@@ -236,29 +236,29 @@
     "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 95.03,
+        "kp": 75.1,
         "ki": 0.0,
-        "kd": 47.89
+        "kd": 12.36
       },
       "shoulder_lift": {
-        "kp": 44.59,
+        "kp": 70.89,
         "ki": 0.0,
-        "kd": 270.06
+        "kd": 61.6
       },
       "elbow_flex": {
-        "kp": 277.14,
+        "kp": 58.87,
         "ki": 0.0,
-        "kd": 197.49
+        "kd": 98.76
       },
       "wrist_flex": {
-        "kp": 76.67,
+        "kp": 34.25,
         "ki": 0.0,
-        "kd": 175.49
+        "kd": 89.43
       },
       "wrist_roll": {
-        "kp": 277.89,
+        "kp": 96.19,
         "ki": 0.0,
-        "kd": 50.84
+        "kd": 59.92
       }
     },
     "expected_behavior": "Mejor damping, error permanente sin Ki"
@@ -269,29 +269,29 @@
     "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 199.64,
+        "kp": 3.16,
         "ki": 0.0,
-        "kd": 254.29
+        "kd": 62.75
       },
       "shoulder_lift": {
-        "kp": 128.79,
+        "kp": 49.11,
         "ki": 0.0,
-        "kd": 214.48
+        "kd": 69.69
       },
       "elbow_flex": {
-        "kp": 26.48,
+        "kp": 74.8,
         "ki": 0.0,
-        "kd": 264.41
+        "kd": 38.3
       },
       "wrist_flex": {
-        "kp": 244.02,
+        "kp": 65.42,
         "ki": 0.0,
-        "kd": 184.06
+        "kd": 12.45
       },
       "wrist_roll": {
-        "kp": 253.94,
+        "kp": 20.37,
         "ki": 0.0,
-        "kd": 257.09
+        "kd": 92.68
       }
     },
     "expected_behavior": "Mejor damping, error permanente sin Ki"
@@ -302,29 +302,29 @@
     "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 145.54,
+        "kp": 52.02,
         "ki": 0.0,
-        "kd": 293.61
+        "kd": 82.03
       },
       "shoulder_lift": {
-        "kp": 203.53,
+        "kp": 7.37,
         "ki": 0.0,
-        "kd": 46.41
+        "kd": 69.28
       },
       "elbow_flex": {
-        "kp": 285.33,
+        "kp": 86.92,
         "ki": 0.0,
-        "kd": 213.27
+        "kd": 93.3
       },
       "wrist_flex": {
-        "kp": 160.85,
+        "kp": 54.23,
         "ki": 0.0,
-        "kd": 83.76
+        "kd": 93.1
       },
       "wrist_roll": {
-        "kp": 134.74,
+        "kp": 49.1,
         "ki": 0.0,
-        "kd": 262.54
+        "kd": 56.18
       }
     },
     "expected_behavior": "Mejor damping, error permanente sin Ki"
@@ -335,28 +335,28 @@
     "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 239.89,
-        "ki": 178.59,
+        "kp": 87.78,
+        "ki": 17.37,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 46.62,
-        "ki": 71.69,
+        "kp": 85.14,
+        "ki": 14.2,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 118.01,
-        "ki": 59.55,
+        "kp": 79.25,
+        "ki": 40.25,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 172.75,
-        "ki": 270.65,
+        "kp": 37.28,
+        "ki": 15.84,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 38.72,
-        "ki": 166.93,
+        "kp": 72.78,
+        "ki": 33.1,
         "kd": 0.0
       }
     },
@@ -368,28 +368,28 @@
     "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 139.21,
-        "ki": 231.17,
+        "kp": 38.2,
+        "ki": 35.12,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 26.36,
-        "ki": 150.55,
+        "kp": 58.18,
+        "ki": 28.86,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 252.59,
-        "ki": 219.35,
+        "kp": 52.55,
+        "ki": 84.58,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 132.17,
-        "ki": 273.67,
+        "kp": 71.82,
+        "ki": 31.78,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 39.71,
-        "ki": 39.44,
+        "kp": 4.19,
+        "ki": 69.28,
         "kd": 0.0
       }
     },
@@ -401,28 +401,28 @@
     "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 223.43,
-        "ki": 38.82,
+        "kp": 77.08,
+        "ki": 5.83,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 130.68,
-        "ki": 106.55,
+        "kp": 39.29,
+        "ki": 89.48,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 32.67,
-        "ki": 287.18,
+        "kp": 62.37,
+        "ki": 63.39,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 0.55,
-        "ki": 70.27,
+        "kp": 58.42,
+        "ki": 28.23,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 187.93,
-        "ki": 59.73,
+        "kp": 21.3,
+        "ki": 12.03,
         "kd": 0.0
       }
     },
@@ -434,28 +434,28 @@
     "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 145.9,
-        "ki": 73.74,
+        "kp": 47.13,
+        "ki": 95.05,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 285.59,
-        "ki": 214.23,
+        "kp": 99.59,
+        "ki": 90.29,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 96.77,
-        "ki": 41.52,
+        "kp": 87.27,
+        "ki": 55.97,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 170.94,
-        "ki": 44.71,
+        "kp": 51.67,
+        "ki": 92.83,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 163.46,
-        "ki": 235.6,
+        "kp": 80.33,
+        "ki": 4.71,
         "kd": 0.0
       }
     },
@@ -467,28 +467,28 @@
     "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 229.69,
-        "ki": 192.28,
+        "kp": 32.63,
+        "ki": 63.9,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 287.34,
-        "ki": 136.61,
+        "kp": 47.92,
+        "ki": 12.06,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 200.78,
-        "ki": 205.56,
+        "kp": 87.74,
+        "ki": 64.6,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 91.6,
-        "ki": 111.55,
+        "kp": 15.26,
+        "ki": 61.9,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 178.79,
-        "ki": 241.46,
+        "kp": 6.66,
+        "ki": 27.57,
         "kd": 0.0
       }
     },
@@ -500,29 +500,29 @@
     "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 172.27,
-        "ki": 155.72,
-        "kd": 121.1
+        "kp": 43.43,
+        "ki": 40.34,
+        "kd": 0.03
       },
       "shoulder_lift": {
-        "kp": 227.54,
-        "ki": 209.74,
-        "kd": 247.34
+        "kp": 12.07,
+        "ki": 56.24,
+        "kd": 94.1
       },
       "elbow_flex": {
-        "kp": 135.59,
-        "ki": 82.93,
-        "kd": 94.24
+        "kp": 69.89,
+        "ki": 63.33,
+        "kd": 68.15
       },
       "wrist_flex": {
-        "kp": 66.97,
-        "ki": 153.08,
-        "kd": 166.19
+        "kp": 35.92,
+        "ki": 22.82,
+        "kd": 81.32
       },
       "wrist_roll": {
-        "kp": 42.98,
-        "ki": 205.12,
-        "kd": 264.92
+        "kp": 86.46,
+        "ki": 32.71,
+        "kd": 67.68
       }
     },
     "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
@@ -533,29 +533,29 @@
     "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 283.76,
-        "ki": 37.99,
-        "kd": 173.79
+        "kp": 29.14,
+        "ki": 34.74,
+        "kd": 3.23
       },
       "shoulder_lift": {
-        "kp": 68.93,
-        "ki": 93.45,
-        "kd": 134.46
+        "kp": 6.57,
+        "ki": 21.25,
+        "kd": 83.57
       },
       "elbow_flex": {
-        "kp": 14.51,
-        "ki": 113.44,
-        "kd": 208.5
+        "kp": 20.45,
+        "ki": 12.81,
+        "kd": 82.18
       },
       "wrist_flex": {
-        "kp": 231.98,
-        "ki": 59.68,
-        "kd": 262.57
+        "kp": 26.99,
+        "ki": 26.32,
+        "kd": 31.58
       },
       "wrist_roll": {
-        "kp": 88.22,
-        "ki": 210.28,
-        "kd": 292.79
+        "kp": 37.55,
+        "ki": 6.08,
+        "kd": 81.82
       }
     },
     "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
@@ -566,29 +566,29 @@
     "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 161.77,
-        "ki": 81.84,
-        "kd": 287.0
+        "kp": 36.68,
+        "ki": 22.81,
+        "kd": 73.24
       },
       "shoulder_lift": {
-        "kp": 206.27,
-        "ki": 254.62,
-        "kd": 260.55
+        "kp": 85.71,
+        "ki": 9.19,
+        "kd": 94.58
       },
       "elbow_flex": {
-        "kp": 256.06,
-        "ki": 254.94,
-        "kd": 256.11
+        "kp": 84.71,
+        "ki": 62.87,
+        "kd": 75.7
       },
       "wrist_flex": {
-        "kp": 169.51,
-        "ki": 171.14,
-        "kd": 137.23
+        "kp": 14.41,
+        "ki": 54.43,
+        "kd": 78.58
       },
       "wrist_roll": {
-        "kp": 168.02,
-        "ki": 133.55,
-        "kd": 6.9
+        "kp": 66.7,
+        "ki": 74.8,
+        "kd": 88.4
       }
     },
     "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
@@ -599,29 +599,29 @@
     "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 195.04,
-        "ki": 131.9,
-        "kd": 56.93
+        "kp": 71.24,
+        "ki": 91.06,
+        "kd": 48.93
       },
       "shoulder_lift": {
-        "kp": 208.43,
-        "ki": 164.56,
-        "kd": 53.87
+        "kp": 87.83,
+        "ki": 82.28,
+        "kd": 75.7
       },
       "elbow_flex": {
-        "kp": 255.83,
-        "ki": 224.46,
-        "kd": 299.8
+        "kp": 14.34,
+        "ki": 98.98,
+        "kd": 61.43
       },
       "wrist_flex": {
-        "kp": 268.52,
-        "ki": 65.88,
-        "kd": 291.26
+        "kp": 21.72,
+        "ki": 84.6,
+        "kd": 54.34
       },
       "wrist_roll": {
-        "kp": 258.63,
-        "ki": 131.81,
-        "kd": 198.3
+        "kp": 32.54,
+        "ki": 51.57,
+        "kd": 83.42
       }
     },
     "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
@@ -632,29 +632,29 @@
     "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 142.67,
-        "ki": 293.68,
-        "kd": 222.12
+        "kp": 31.48,
+        "ki": 62.24,
+        "kd": 7.27
       },
       "shoulder_lift": {
-        "kp": 197.53,
-        "ki": 292.37,
-        "kd": 201.71
+        "kp": 8.21,
+        "ki": 54.34,
+        "kd": 65.44
       },
       "elbow_flex": {
-        "kp": 193.39,
-        "ki": 294.9,
-        "kd": 299.36
+        "kp": 50.43,
+        "ki": 26.35,
+        "kd": 1.27
       },
       "wrist_flex": {
-        "kp": 32.38,
-        "ki": 42.91,
-        "kd": 1.59
+        "kp": 31.46,
+        "ki": 60.34,
+        "kd": 10.99
       },
       "wrist_roll": {
-        "kp": 84.65,
-        "ki": 230.43,
-        "kd": 171.43
+        "kp": 19.67,
+        "ki": 37.3,
+        "kd": 40.21
       }
     },
     "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"

@@ -15,7 +15,7 @@ from dataclasses import dataclass, asdict
 from typing import Dict
 
 # Maximum value for any PID gain (per joint)
-MAX_GAIN = 300
+MAX_GAIN = 100
 
 JOINT_NAMES = ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"]
 
