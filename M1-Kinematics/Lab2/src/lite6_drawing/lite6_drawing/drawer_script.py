@@ -1,6 +1,7 @@
 
 import rclpy
 from rclpy.node import Node
+from rclpy.logging import LoggingSeverity
 from geometry_msgs.msg import PoseStamped, Pose, Point
 from pymoveit2 import MoveIt2
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -15,12 +16,20 @@ from tf2_ros import TransformException
 
 from visualization_msgs.msg import Marker
 from std_msgs.msg import ColorRGBA
+from rich.console import Console
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
+from rich.live import Live
+from rich.panel import Panel
+
+console = Console()
 
 class Lite6Drawer(Node):
 
     def __init__(self):
         super().__init__('lite6_drawer')
-        self.get_logger().info('Iniciando nodo de dibujo xArm Lite 6...')
+        console.rule("[bold cyan]Lite6 Drawer Node[/bold cyan]")
+        
+        self.get_logger().set_level(LoggingSeverity.ERROR)
         
         self.callback_group = ReentrantCallbackGroup()
         
@@ -66,7 +75,7 @@ class Lite6Drawer(Node):
             
             return current_pose
         except TransformException as ex:
-            self.get_logger().error(f'Error de lectura TF2: {ex}')
+            console.print(f'[bold red]Error TF2: {ex}[/bold red]')
             return None
 
     def translate_pose_locally(self, base_pose, dx, dy, dz):
@@ -159,10 +168,10 @@ class Lite6Drawer(Node):
         final_width = final_height * 0.65 
         spacing = final_width * 1.3
         
-        self.get_logger().info(f'Escalado: Letras de {final_height*100:.1f}cm de alto')
+        console.print(f'[dim]Scaling: Letters of {final_height*100:.1f}cm in height[/dim]')
         return final_width, final_height, spacing
 
-    def draw_letter(self, letter, letter_base_pose, w_size, h_size):
+    def draw_letter(self, letter, letter_base_pose, w_size, h_size, progress_callback=None):
         trajectory = self.get_letter_trajectory(letter)
         if not trajectory: return False
         
@@ -186,7 +195,11 @@ class Lite6Drawer(Node):
             waypoints.append(waypoint)
             
         try:
-            for waypoint in waypoints:
+            total_points = len(waypoints)
+            for i, waypoint in enumerate(waypoints):
+                if progress_callback:
+                    progress_callback(i + 1, total_points)
+                    
                 self.moveit2.move_to_pose(
                     position=[waypoint.position.x, waypoint.position.y, waypoint.position.z],
                     quat_xyzw=[waypoint.orientation.x, waypoint.orientation.y, waypoint.orientation.z, waypoint.orientation.w],
@@ -204,58 +217,81 @@ class Lite6Drawer(Node):
                 
             return True
         except Exception as e:
-            self.get_logger().error(f'Error en IK Cartesiana: {str(e)}')
+            console.print(f'[bold red]Error in Cartesian IK: {str(e)}[/bold red]')
             return False
     
     def draw_word(self, word, start_pose):
-        self.get_logger().info(f'DIBUJANDO PALABRA: "{word.upper()}"')
+        console.rule(f"[bold yellow]Drawing Word: {word.upper()}[/bold yellow]")
+        logging_severity = self.get_logger().get_effective_level()
+        self.get_logger().set_level(LoggingSeverity.ERROR)
         
         w_size, h_size, letter_spacing = self.calculate_dynamic_size(word)
         current_offset = 0.0
         
-        for i, letter in enumerate(word.upper()):
-            if letter == ' ':
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(bar_width=None),
+            TaskProgressColumn(),
+            TimeRemainingColumn(),
+            console=console,
+            transient=False 
+        ) as progress:
+            main_task = progress.add_task(f"[cyan]Drawing...", total=len(word))
+            
+            for i, letter in enumerate(word.upper()):
+                if letter == ' ':
+                    current_offset += letter_spacing
+                    progress.advance(main_task)
+                    continue
+                    
+                progress.update(main_task, description=f"[cyan]Drawing letter: [bold white]{letter}[/bold white]")
+                
+                letter_pose = self.translate_pose_locally(start_pose, dx=current_offset, dy=0.0, dz=0.0)
+                hover_pose = self.translate_pose_locally(letter_pose, dx=0.0, dy=0.0, dz=-self.retract_dist)
+                
+                try:
+                    self.moveit2.move_to_pose(
+                        position=[hover_pose.position.x, hover_pose.position.y, hover_pose.position.z],
+                        quat_xyzw=[hover_pose.orientation.x, hover_pose.orientation.y, hover_pose.orientation.z, hover_pose.orientation.w],
+                        cartesian=True
+                    )
+                    self.moveit2.wait_until_executed()
+                    
+                    self.moveit2.move_to_pose(
+                        position=[letter_pose.position.x, letter_pose.position.y, letter_pose.position.z],
+                        quat_xyzw=[letter_pose.orientation.x, letter_pose.orientation.y, letter_pose.orientation.z, letter_pose.orientation.w],
+                        cartesian=True
+                    )
+                    self.moveit2.wait_until_executed()
+
+                    def update_letter_progress(current, total):
+                         progress.update(main_task, description=f"[cyan]Drawing [bold white]{letter}[/bold white] (point {current}/{total})")
+
+                    if not self.draw_letter(letter, letter_pose, w_size, h_size, progress_callback=update_letter_progress): 
+                        self.get_logger().set_level(logging_severity)
+                        return False
+                    
+                    end_pose = self.get_current_pose()
+                    retreat_pose = self.translate_pose_locally(end_pose, dx=0.0, dy=0.0, dz=-self.retract_dist)
+                    
+                    self.moveit2.move_to_pose(
+                        position=[retreat_pose.position.x, retreat_pose.position.y, retreat_pose.position.z],
+                        quat_xyzw=[retreat_pose.orientation.x, retreat_pose.orientation.y, retreat_pose.orientation.z, retreat_pose.orientation.w],
+                        cartesian=True
+                    )
+                    self.moveit2.wait_until_executed()
+                    
+                except Exception as e:
+                    console.print(f"[bold red]Error during drawing: {e}[/bold red]")
+                    self.get_logger().set_level(logging_severity) 
+                    return False
+                
                 current_offset += letter_spacing
-                continue
-                
-            self.get_logger().info(f'Trazando: "{letter}"')
-            
-            letter_pose = self.translate_pose_locally(start_pose, dx=current_offset, dy=0.0, dz=0.0)
-            hover_pose = self.translate_pose_locally(letter_pose, dx=0.0, dy=0.0, dz=-self.retract_dist)
-            
-            try:
-                self.moveit2.move_to_pose(
-                    position=[hover_pose.position.x, hover_pose.position.y, hover_pose.position.z],
-                    quat_xyzw=[hover_pose.orientation.x, hover_pose.orientation.y, hover_pose.orientation.z, hover_pose.orientation.w],
-                    cartesian=True
-                )
-                self.moveit2.wait_until_executed()
-                
-                self.moveit2.move_to_pose(
-                    position=[letter_pose.position.x, letter_pose.position.y, letter_pose.position.z],
-                    quat_xyzw=[letter_pose.orientation.x, letter_pose.orientation.y, letter_pose.orientation.z, letter_pose.orientation.w],
-                    cartesian=True
-                )
-                self.moveit2.wait_until_executed()
-                
-                if not self.draw_letter(letter, letter_pose, w_size, h_size): return False
-                
-                end_pose = self.get_current_pose()
-                retreat_pose = self.translate_pose_locally(end_pose, dx=0.0, dy=0.0, dz=-self.retract_dist)
-                
-                self.moveit2.move_to_pose(
-                    position=[retreat_pose.position.x, retreat_pose.position.y, retreat_pose.position.z],
-                    quat_xyzw=[retreat_pose.orientation.x, retreat_pose.orientation.y, retreat_pose.orientation.z, retreat_pose.orientation.w],
-                    cartesian=True
-                )
-                self.moveit2.wait_until_executed()
-                
-            except Exception as e:
-                return False
-            
-            current_offset += letter_spacing
-                
-        self.get_logger().info('Secuencia de dibujo completada.')
+                progress.advance(main_task)
+        
+        self.get_logger().set_level(logging_severity) 
+        console.print('[bold green]✔ Drawing sequence completed.[/bold green]')
         return True
         
     def start_drawing(self):
@@ -263,18 +299,20 @@ class Lite6Drawer(Node):
         self.pose_published = True
         self.timer.cancel()
         
-        
         target_word = "DREAMTEAM" 
         
-        self.get_logger().info('Adquiriendo pose inicial para anclaje de plano alineado a la gravedad...')
-        current_pose = self.get_current_pose()
-        if current_pose is None: return
+        with console.status("[bold green]Acquiring initial pose for anchoring...", spinner="dots"):
+             time.sleep(1.0)
+             current_pose = self.get_current_pose()
+        
+        if current_pose is None:
+            console.print("[bold red] Could not acquire initial pose.[/bold red]") 
+            return
             
         try:
-            time.sleep(1.0)
             self.draw_word(target_word, current_pose)
         except Exception as e:
-            self.get_logger().error(str(e))
+            console.print(f'[bold red]Fatal error: {str(e)}[/bold red]')
             
     def pose_callback(self, msg): pass
         
