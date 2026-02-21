@@ -19,8 +19,8 @@ echo "==========================================================================
 echo ""
 echo "This will execute:"
 echo "  1. Generation of 20 configs"
-echo "  2. Simulation of 20 experiments (~10 min)"
-echo "  3. Plots"
+echo "  2. Simulation of 20 experiments (15s each)"
+echo "  3. Interactive HTML plots (Plotly)"
 echo "  4. Metrics analysis"
 echo ""
 echo "=========================================================================="
@@ -91,7 +91,7 @@ echo ""
 
 # Step 3: Run experiments
 echo "=========================================================================="
-echo -e "${YELLOW}[3/5] Running 20 experiments (~10 min)...${NC}"
+echo -e "${YELLOW}[3/5] Running 20 experiments (15s each)...${NC}"
 echo "=========================================================================="
 
 EXP_START=$(date +%s)
@@ -118,7 +118,8 @@ echo "==========================================================================
 
 python3 plot_rubric_results.py \
     --input "$LOGS_DIR/" \
-    --output "$PLOTS_DIR/"
+    --output "$PLOTS_DIR/" \
+    --config "$CONFIG_FILE"
 
 PLOT_COUNT=$(ls -1 "$PLOTS_DIR"/plot_*.png 2>/dev/null | wc -l)
 echo ""
@@ -154,7 +155,7 @@ echo "Total time: ${TOTAL_DURATION}s (~$((TOTAL_DURATION / 60)) minutes)"
 echo ""
 echo "Files generated:"
 echo "  $LOGS_DIR/ → $CSV_COUNT CSVs"
-echo "  $PLOTS_DIR/ → $PLOT_COUNT PNGs"
+echo "  $PLOTS_DIR/ → $PLOT_COUNT PNGs + dashboard.html"
 echo "  $METRICS_FILE → Metrics table"
 echo "  $METRICS_JSON → JSON data"
 echo ""
@@ -163,6 +164,8 @@ echo ""
 echo "To review results:"
 echo "  cat $METRICS_FILE"
 echo "  ls -lh $PLOTS_DIR/"
+echo ""
+echo -e "${GREEN}Dashboard: $PLOTS_DIR/dashboard.html${NC}"
 echo ""
 echo "=========================================================================="
 echo -e "${BLUE}Complete pipeline - T3001B${NC}"

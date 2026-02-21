@@ -1,722 +1,662 @@
 [
   {
-    "combo_id": "P_1_VeryLow",
+    "combo_id": "P_1",
     "family": "P",
-    "description": "Very low Kp, slow response",
-    "kp_base": 300,
-    "ki_base": 0.0,
-    "kd_base": 0.0,
+    "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 450.0,
+        "kp": 30.11,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 600.0,
+        "kp": 16.47,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 450.0,
+        "kp": 42.0,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 300.0,
+        "kp": 78.64,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 180.0,
+        "kp": 41.54,
         "ki": 0.0,
         "kd": 0.0
       }
     },
-    "expected_behavior": "No Ki: steady-state error. Slow speed"
+    "expected_behavior": "Sin Ki: error permanente. Sin Kd: sin damping"
   },
   {
-    "combo_id": "P_2_Low",
+    "combo_id": "P_2",
     "family": "P",
-    "description": "Low Kp, smooth but slow",
-    "kp_base": 600,
-    "ki_base": 0.0,
-    "kd_base": 0.0,
+    "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 900.0,
+        "kp": 7.46,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 1200.0,
+        "kp": 44.75,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 900.0,
+        "kp": 58.95,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 600.0,
+        "kp": 82.13,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 360.0,
+        "kp": 9.99,
         "ki": 0.0,
         "kd": 0.0
       }
     },
-    "expected_behavior": "No Ki: steady-state error. Slow speed"
+    "expected_behavior": "Sin Ki: error permanente. Sin Kd: sin damping"
   },
   {
-    "combo_id": "P_3_Medium",
+    "combo_id": "P_3",
     "family": "P",
-    "description": "Medium Kp, balanced",
-    "kp_base": 1000,
-    "ki_base": 0.0,
-    "kd_base": 0.0,
+    "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1500.0,
+        "kp": 6.47,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 2000.0,
+        "kp": 46.73,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 1500.0,
+        "kp": 1.07,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 1000.0,
+        "kp": 94.34,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 600.0,
+        "kp": 18.42,
         "ki": 0.0,
         "kd": 0.0
       }
     },
-    "expected_behavior": "No Ki: steady-state error. Medium speed"
+    "expected_behavior": "Sin Ki: error permanente. Sin Kd: sin damping"
   },
   {
-    "combo_id": "P_4_High",
+    "combo_id": "P_4",
     "family": "P",
-    "description": "High Kp, fast with overshoot",
-    "kp_base": 1500,
-    "ki_base": 0.0,
-    "kd_base": 0.0,
+    "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 2250.0,
+        "kp": 83.98,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 3000.0,
+        "kp": 1.67,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 2250.0,
+        "kp": 29.75,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 1500.0,
+        "kp": 46.86,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 900.0,
+        "kp": 39.82,
         "ki": 0.0,
         "kd": 0.0
       }
     },
-    "expected_behavior": "No Ki: steady-state error. Fast speed"
+    "expected_behavior": "Sin Ki: error permanente. Sin Kd: sin damping"
   },
   {
-    "combo_id": "P_5_VeryHigh",
+    "combo_id": "P_5",
     "family": "P",
-    "description": "Very high Kp, oscillation risk",
-    "kp_base": 2500,
-    "ki_base": 0.0,
-    "kd_base": 0.0,
+    "description": "Solo proporcional, random Kp por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 3750.0,
+        "kp": 65.44,
         "ki": 0.0,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 5000.0,
+        "kp": 42.89,
         "ki": 0.0,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 3750.0,
+        "kp": 23.86,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 2500.0,
+        "kp": 21.55,
         "ki": 0.0,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 1500.0,
+        "kp": 14.1,
         "ki": 0.0,
         "kd": 0.0
       }
     },
-    "expected_behavior": "No Ki: steady-state error. Fast speed"
+    "expected_behavior": "Sin Ki: error permanente. Sin Kd: sin damping"
   },
   {
-    "combo_id": "PD_1_LightDamp",
+    "combo_id": "PD_1",
     "family": "PD",
-    "description": "PD with light damping, low Kd",
-    "kp_base": 1000,
-    "ki_base": 0.0,
-    "kd_base": 20,
+    "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1500.0,
+        "kp": 74.21,
         "ki": 0.0,
-        "kd": 24.0
+        "kd": 72.22
       },
       "shoulder_lift": {
-        "kp": 2000.0,
+        "kp": 94.11,
         "ki": 0.0,
-        "kd": 30.0
+        "kd": 36.21
       },
       "elbow_flex": {
-        "kp": 1500.0,
+        "kp": 7.91,
         "ki": 0.0,
-        "kd": 26.0
+        "kd": 47.9
       },
       "wrist_flex": {
-        "kp": 1000.0,
+        "kp": 5.09,
         "ki": 0.0,
-        "kd": 20.0
+        "kd": 2.42
       },
       "wrist_roll": {
-        "kp": 600.0,
+        "kp": 2.91,
         "ki": 0.0,
-        "kd": 16.0
+        "kd": 39.86
       }
     },
-    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.02"
+    "expected_behavior": "Mejor damping, error permanente sin Ki"
   },
   {
-    "combo_id": "PD_2_Critical",
+    "combo_id": "PD_2",
     "family": "PD",
-    "description": "PD optimal critical damping",
-    "kp_base": 1000,
-    "ki_base": 0.0,
-    "kd_base": 50,
+    "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1500.0,
+        "kp": 62.26,
         "ki": 0.0,
-        "kd": 60.0
+        "kd": 25.76
       },
       "shoulder_lift": {
-        "kp": 2000.0,
+        "kp": 34.63,
         "ki": 0.0,
-        "kd": 75.0
+        "kd": 63.95
       },
       "elbow_flex": {
-        "kp": 1500.0,
+        "kp": 31.97,
         "ki": 0.0,
-        "kd": 65.0
+        "kd": 19.77
       },
       "wrist_flex": {
-        "kp": 1000.0,
+        "kp": 45.83,
         "ki": 0.0,
-        "kd": 50.0
+        "kd": 73.05
       },
       "wrist_roll": {
-        "kp": 600.0,
+        "kp": 35.48,
         "ki": 0.0,
-        "kd": 40.0
+        "kd": 16.72
       }
     },
-    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.05"
+    "expected_behavior": "Mejor damping, error permanente sin Ki"
   },
   {
-    "combo_id": "PD_3_OverDamp",
+    "combo_id": "PD_3",
     "family": "PD",
-    "description": "Overdamped, slow",
-    "kp_base": 1000,
-    "ki_base": 0.0,
-    "kd_base": 100,
+    "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1500.0,
+        "kp": 75.1,
         "ki": 0.0,
-        "kd": 120.0
+        "kd": 12.36
       },
       "shoulder_lift": {
-        "kp": 2000.0,
+        "kp": 70.89,
         "ki": 0.0,
-        "kd": 150.0
+        "kd": 61.6
       },
       "elbow_flex": {
-        "kp": 1500.0,
+        "kp": 58.87,
         "ki": 0.0,
-        "kd": 130.0
+        "kd": 98.76
       },
       "wrist_flex": {
-        "kp": 1000.0,
+        "kp": 34.25,
         "ki": 0.0,
-        "kd": 100.0
+        "kd": 89.43
       },
       "wrist_roll": {
-        "kp": 600.0,
+        "kp": 96.19,
         "ki": 0.0,
-        "kd": 80.0
+        "kd": 59.92
       }
     },
-    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.10"
+    "expected_behavior": "Mejor damping, error permanente sin Ki"
   },
   {
-    "combo_id": "PD_4_Stiff",
+    "combo_id": "PD_4",
     "family": "PD",
-    "description": "High Kp and Kd, very stiff",
-    "kp_base": 1800,
-    "ki_base": 0.0,
-    "kd_base": 90,
+    "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 2700.0,
+        "kp": 3.16,
         "ki": 0.0,
-        "kd": 108.0
+        "kd": 62.75
       },
       "shoulder_lift": {
-        "kp": 3600.0,
+        "kp": 49.11,
         "ki": 0.0,
-        "kd": 135.0
+        "kd": 69.69
       },
       "elbow_flex": {
-        "kp": 2700.0,
+        "kp": 74.8,
         "ki": 0.0,
-        "kd": 117.0
+        "kd": 38.3
       },
       "wrist_flex": {
-        "kp": 1800.0,
+        "kp": 65.42,
         "ki": 0.0,
-        "kd": 90.0
+        "kd": 12.45
       },
       "wrist_roll": {
-        "kp": 1080.0,
+        "kp": 20.37,
         "ki": 0.0,
-        "kd": 72.0
+        "kd": 92.68
       }
     },
-    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.05"
+    "expected_behavior": "Mejor damping, error permanente sin Ki"
   },
   {
-    "combo_id": "PD_5_ExcessiveKd",
+    "combo_id": "PD_5",
     "family": "PD",
-    "description": "Very high Kd, amplifies noise",
-    "kp_base": 1200,
-    "ki_base": 0.0,
-    "kd_base": 180,
+    "description": "Proporcional-Derivativo, random Kp y Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1800.0,
+        "kp": 52.02,
         "ki": 0.0,
-        "kd": 216.0
+        "kd": 82.03
       },
       "shoulder_lift": {
-        "kp": 2400.0,
+        "kp": 7.37,
         "ki": 0.0,
-        "kd": 270.0
+        "kd": 69.28
       },
       "elbow_flex": {
-        "kp": 1800.0,
+        "kp": 86.92,
         "ki": 0.0,
-        "kd": 234.0
+        "kd": 93.3
       },
       "wrist_flex": {
-        "kp": 1200.0,
+        "kp": 54.23,
         "ki": 0.0,
-        "kd": 180.0
+        "kd": 93.1
       },
       "wrist_roll": {
-        "kp": 720.0,
+        "kp": 49.1,
         "ki": 0.0,
-        "kd": 144.0
+        "kd": 56.18
       }
     },
-    "expected_behavior": "Better damping, steady-state error without Ki, Kd/Kp ratio=0.15"
+    "expected_behavior": "Mejor damping, error permanente sin Ki"
   },
   {
-    "combo_id": "PI_1_LowKi",
+    "combo_id": "PI_1",
     "family": "PI",
-    "description": "Low Ki, eliminates error slowly",
-    "kp_base": 800,
-    "ki_base": 40,
-    "kd_base": 0.0,
+    "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1200.0,
-        "ki": 60.0,
+        "kp": 87.78,
+        "ki": 17.37,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 1600.0,
-        "ki": 100.0,
+        "kp": 85.14,
+        "ki": 14.2,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 1200.0,
-        "ki": 80.0,
+        "kp": 79.25,
+        "ki": 40.25,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 800.0,
-        "ki": 40.0,
+        "kp": 37.28,
+        "ki": 15.84,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 480.0,
-        "ki": 20.0,
+        "kp": 72.78,
+        "ki": 33.1,
         "kd": 0.0
       }
     },
-    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.05"
+    "expected_behavior": "Elimina error SS, sin Kd puede oscilar"
   },
   {
-    "combo_id": "PI_2_MediumKi",
+    "combo_id": "PI_2",
     "family": "PI",
-    "description": "Balanced PI",
-    "kp_base": 800,
-    "ki_base": 80,
-    "kd_base": 0.0,
+    "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1200.0,
-        "ki": 120.0,
+        "kp": 38.2,
+        "ki": 35.12,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 1600.0,
-        "ki": 200.0,
+        "kp": 58.18,
+        "ki": 28.86,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 1200.0,
-        "ki": 160.0,
+        "kp": 52.55,
+        "ki": 84.58,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 800.0,
-        "ki": 80.0,
+        "kp": 71.82,
+        "ki": 31.78,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 480.0,
-        "ki": 40.0,
+        "kp": 4.19,
+        "ki": 69.28,
         "kd": 0.0
       }
     },
-    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.10"
+    "expected_behavior": "Elimina error SS, sin Kd puede oscilar"
   },
   {
-    "combo_id": "PI_3_HighKi",
+    "combo_id": "PI_3",
     "family": "PI",
-    "description": "High Ki, may saturate",
-    "kp_base": 800,
-    "ki_base": 160,
-    "kd_base": 0.0,
+    "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1200.0,
-        "ki": 240.0,
+        "kp": 77.08,
+        "ki": 5.83,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 1600.0,
-        "ki": 400.0,
+        "kp": 39.29,
+        "ki": 89.48,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 1200.0,
-        "ki": 320.0,
+        "kp": 62.37,
+        "ki": 63.39,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 800.0,
-        "ki": 160.0,
+        "kp": 58.42,
+        "ki": 28.23,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 480.0,
-        "ki": 80.0,
+        "kp": 21.3,
+        "ki": 12.03,
         "kd": 0.0
       }
     },
-    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.20"
+    "expected_behavior": "Elimina error SS, sin Kd puede oscilar"
   },
   {
-    "combo_id": "PI_4_LowKp_HighKi",
+    "combo_id": "PI_4",
     "family": "PI",
-    "description": "Low Kp, high Ki, slow but precise",
-    "kp_base": 500,
-    "ki_base": 150,
-    "kd_base": 0.0,
+    "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 750.0,
-        "ki": 225.0,
+        "kp": 47.13,
+        "ki": 95.05,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 1000.0,
-        "ki": 375.0,
+        "kp": 99.59,
+        "ki": 90.29,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 750.0,
-        "ki": 300.0,
+        "kp": 87.27,
+        "ki": 55.97,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 500.0,
-        "ki": 150.0,
+        "kp": 51.67,
+        "ki": 92.83,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 300.0,
-        "ki": 75.0,
+        "kp": 80.33,
+        "ki": 4.71,
         "kd": 0.0
       }
     },
-    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.30"
+    "expected_behavior": "Elimina error SS, sin Kd puede oscilar"
   },
   {
-    "combo_id": "PI_5_Aggressive",
+    "combo_id": "PI_5",
     "family": "PI",
-    "description": "Both high, fast but unstable",
-    "kp_base": 1200,
-    "ki_base": 240,
-    "kd_base": 0.0,
+    "description": "Proporcional-Integral, random Kp y Ki por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1800.0,
-        "ki": 360.0,
+        "kp": 32.63,
+        "ki": 63.9,
         "kd": 0.0
       },
       "shoulder_lift": {
-        "kp": 2400.0,
-        "ki": 600.0,
+        "kp": 47.92,
+        "ki": 12.06,
         "kd": 0.0
       },
       "elbow_flex": {
-        "kp": 1800.0,
-        "ki": 480.0,
+        "kp": 87.74,
+        "ki": 64.6,
         "kd": 0.0
       },
       "wrist_flex": {
-        "kp": 1200.0,
-        "ki": 240.0,
+        "kp": 15.26,
+        "ki": 61.9,
         "kd": 0.0
       },
       "wrist_roll": {
-        "kp": 720.0,
-        "ki": 120.0,
+        "kp": 6.66,
+        "ki": 27.57,
         "kd": 0.0
       }
     },
-    "expected_behavior": "Eliminates SS error, may oscillate without Kd, Ki/Kp=0.20"
+    "expected_behavior": "Elimina error SS, sin Kd puede oscilar"
   },
   {
-    "combo_id": "PID_1_Conservative",
+    "combo_id": "PID_1",
     "family": "PID",
-    "description": "Low gains, safe",
-    "kp_base": 800,
-    "ki_base": 80,
-    "kd_base": 40,
+    "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1200.0,
-        "ki": 120.0,
-        "kd": 48.0
+        "kp": 43.43,
+        "ki": 40.34,
+        "kd": 0.03
       },
       "shoulder_lift": {
-        "kp": 1600.0,
-        "ki": 200.0,
-        "kd": 60.0
+        "kp": 12.07,
+        "ki": 56.24,
+        "kd": 94.1
       },
       "elbow_flex": {
-        "kp": 1200.0,
-        "ki": 160.0,
-        "kd": 52.0
+        "kp": 69.89,
+        "ki": 63.33,
+        "kd": 68.15
       },
       "wrist_flex": {
-        "kp": 800.0,
-        "ki": 80.0,
-        "kd": 40.0
+        "kp": 35.92,
+        "ki": 22.82,
+        "kd": 81.32
       },
       "wrist_roll": {
-        "kp": 480.0,
-        "ki": 40.0,
-        "kd": 32.0
+        "kp": 86.46,
+        "ki": 32.71,
+        "kd": 67.68
       }
     },
-    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
+    "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
   },
   {
-    "combo_id": "PID_2_Balanced",
+    "combo_id": "PID_2",
     "family": "PID",
-    "description": "General purpose",
-    "kp_base": 1200,
-    "ki_base": 120,
-    "kd_base": 60,
+    "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1800.0,
-        "ki": 180.0,
-        "kd": 72.0
+        "kp": 29.14,
+        "ki": 34.74,
+        "kd": 3.23
       },
       "shoulder_lift": {
-        "kp": 2400.0,
-        "ki": 300.0,
-        "kd": 90.0
+        "kp": 6.57,
+        "ki": 21.25,
+        "kd": 83.57
       },
       "elbow_flex": {
-        "kp": 1800.0,
-        "ki": 240.0,
-        "kd": 78.0
+        "kp": 20.45,
+        "ki": 12.81,
+        "kd": 82.18
       },
       "wrist_flex": {
-        "kp": 1200.0,
-        "ki": 120.0,
-        "kd": 60.0
+        "kp": 26.99,
+        "ki": 26.32,
+        "kd": 31.58
       },
       "wrist_roll": {
-        "kp": 720.0,
-        "ki": 60.0,
-        "kd": 48.0
+        "kp": 37.55,
+        "ki": 6.08,
+        "kd": 81.82
       }
     },
-    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
+    "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
   },
   {
-    "combo_id": "PID_3_Aggressive",
+    "combo_id": "PID_3",
     "family": "PID",
-    "description": "Fast response",
-    "kp_base": 1800,
-    "ki_base": 180,
-    "kd_base": 90,
+    "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 2700.0,
-        "ki": 270.0,
-        "kd": 108.0
+        "kp": 36.68,
+        "ki": 22.81,
+        "kd": 73.24
       },
       "shoulder_lift": {
-        "kp": 3600.0,
-        "ki": 450.0,
-        "kd": 135.0
+        "kp": 85.71,
+        "ki": 9.19,
+        "kd": 94.58
       },
       "elbow_flex": {
-        "kp": 2700.0,
-        "ki": 360.0,
-        "kd": 117.0
+        "kp": 84.71,
+        "ki": 62.87,
+        "kd": 75.7
       },
       "wrist_flex": {
-        "kp": 1800.0,
-        "ki": 180.0,
-        "kd": 90.0
+        "kp": 14.41,
+        "ki": 54.43,
+        "kd": 78.58
       },
       "wrist_roll": {
-        "kp": 1080.0,
-        "ki": 90.0,
-        "kd": 72.0
+        "kp": 66.7,
+        "ki": 74.8,
+        "kd": 88.4
       }
     },
-    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
+    "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
   },
   {
-    "combo_id": "PID_4_KiDominant",
+    "combo_id": "PID_4",
     "family": "PID",
-    "description": "High Ki, windup risk",
-    "kp_base": 2000,
-    "ki_base": 250,
-    "kd_base": 50,
+    "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 3000.0,
-        "ki": 375.0,
-        "kd": 60.0
+        "kp": 71.24,
+        "ki": 91.06,
+        "kd": 48.93
       },
       "shoulder_lift": {
-        "kp": 4000.0,
-        "ki": 625.0,
-        "kd": 75.0
+        "kp": 87.83,
+        "ki": 82.28,
+        "kd": 75.7
       },
       "elbow_flex": {
-        "kp": 3000.0,
-        "ki": 500.0,
-        "kd": 65.0
+        "kp": 14.34,
+        "ki": 98.98,
+        "kd": 61.43
       },
       "wrist_flex": {
-        "kp": 2000.0,
-        "ki": 250.0,
-        "kd": 50.0
+        "kp": 21.72,
+        "ki": 84.6,
+        "kd": 54.34
       },
       "wrist_roll": {
-        "kp": 1200.0,
-        "ki": 125.0,
-        "kd": 40.0
+        "kp": 32.54,
+        "ki": 51.57,
+        "kd": 83.42
       }
     },
-    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
+    "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
   },
   {
-    "combo_id": "PID_5_KdDominant",
+    "combo_id": "PID_5",
     "family": "PID",
-    "description": "High Kd, heavily damped",
-    "kp_base": 1000,
-    "ki_base": 100,
-    "kd_base": 150,
+    "description": "PID completo, random Kp Ki Kd por joint",
     "gains_per_joint": {
       "shoulder_pan": {
-        "kp": 1500.0,
-        "ki": 150.0,
-        "kd": 180.0
+        "kp": 31.48,
+        "ki": 62.24,
+        "kd": 7.27
       },
       "shoulder_lift": {
-        "kp": 2000.0,
-        "ki": 250.0,
-        "kd": 225.0
+        "kp": 8.21,
+        "ki": 54.34,
+        "kd": 65.44
       },
       "elbow_flex": {
-        "kp": 1500.0,
-        "ki": 200.0,
-        "kd": 195.0
+        "kp": 50.43,
+        "ki": 26.35,
+        "kd": 1.27
       },
       "wrist_flex": {
-        "kp": 1000.0,
-        "ki": 100.0,
-        "kd": 150.0
+        "kp": 31.46,
+        "ki": 60.34,
+        "kd": 10.99
       },
       "wrist_roll": {
-        "kp": 600.0,
-        "ki": 50.0,
-        "kd": 120.0
+        "kp": 19.67,
+        "ki": 37.3,
+        "kd": 40.21
       }
     },
-    "expected_behavior": "All 3 terms active, eliminates SS error and provides damping"
+    "expected_behavior": "Los 3 terminos activos, elimina error SS y damping"
   }
 ]
