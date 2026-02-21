@@ -56,7 +56,7 @@ git submodule update --init --recursive
 
 ## Uso
 
-[Agregar instrucciones de uso específicas del laboratorio]
+[TODO: Agregar instrucciones de uso específicas del laboratorio]
 
 ## Autores
 
