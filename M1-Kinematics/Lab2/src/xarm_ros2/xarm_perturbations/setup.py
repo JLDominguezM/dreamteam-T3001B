@@ -27,6 +27,7 @@ setup(
         'perturbation_injector = xarm_perturbations.perturbation_injector:main',
         'circle_maker = xarm_perturbations.circle_maker:main',
         'custom_maker = xarm_perturbations.custom_maker:main',
+        'new = xarm_perturbations.new:main',
     	],
     },
 

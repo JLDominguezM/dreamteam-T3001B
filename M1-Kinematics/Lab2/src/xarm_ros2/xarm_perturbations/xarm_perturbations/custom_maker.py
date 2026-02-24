@@ -19,27 +19,13 @@ class PositionController(Node):
         self.declare_parameter('output_topic', '/servo_server/delta_twist_cmds')
         
         # --- GANANCIAS HÍBRIDAS DEFINITIVAS ---
-        # Base sin perturbaciones: Kp=1.8, Ki=0.0, Kd=0.02 (muy bajo para evitar ruido)
-        # self.declare_parameter('kp', '[1.8, 3.5, 3.5]')
-        # self.declare_parameter('kd', '[0.02, 0.15, 0.15]')
-        # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
-        
-        # para sin pertubacion
-        # self.declare_parameter('kp', '[1.0, 1.0, 1.0]')
-        # self.declare_parameter('kd', '[0.01, 0.01, 0.01]')
+        # base
+        # self.declare_parameter('kp', '[32.18, 32.18, 0.0]')
+        # self.declare_parameter('kd', '[3.42, 3.42, 0.0]')
         # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
 
-        # self.kp = np.array([34.18, 34.18, 34.18])
-        # self.kd = np.array([3.42, 3.42, 3.42]) 
-        # self.ki = np.array([0.0, 0.0, 0.0])
-        
-        
-        # self.kp = np.array([9.72, 9.72, 9.72])
-        # self.kd = np.array([0.22, 0.22, 0.22]) 
-        # self.ki = np.array([0.0, 0.0, 0.0])
-
-        self.declare_parameter('kp', '[0.9, 0.72, 9.72]')
-        self.declare_parameter('kd', '[0.08, 0.022, 0.22]')
+        self.declare_parameter('kp', '[10.315, 32.18, 0.0]')
+        self.declare_parameter('kd', '[7.034, 3.42, 0.0]')
         self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
         
 
