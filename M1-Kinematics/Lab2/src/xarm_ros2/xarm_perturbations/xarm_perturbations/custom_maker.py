@@ -24,10 +24,14 @@ class PositionController(Node):
         # self.declare_parameter('kd', '[3.42, 3.42, 0.0]')
         # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
 
-        self.declare_parameter('kp', '[10.315, 32.18, 0.0]')
-        self.declare_parameter('kd', '[7.034, 3.42, 0.0]')
+        # Sine
+        # self.declare_parameter('kp', '[130.315, 100.18, 10.0]')
+        # self.declare_parameter('kd', '[8.034, 7.42, 6.0]')
+        # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
+
+        self.declare_parameter('kp', '[130.315, 100.18, 10.0]')
+        self.declare_parameter('kd', '[8.034, 7.42, 6.0]')
         self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
-        
 
         self.declare_parameter('max_speed', 0.10)
         self.declare_parameter('deadband', 0.002)
