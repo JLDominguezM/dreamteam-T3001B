@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 import math
 import ast
+import pathlib
 import numpy as np
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
 from tf2_ros import Buffer, TransformListener
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 class PositionController(Node):
     def __init__(self):
@@ -24,10 +28,18 @@ class PositionController(Node):
         # self.declare_parameter('kp', '[1.0, 1.0, 1.0]')
         # self.declare_parameter('kd', '[0.01, 0.01, 0.01]')
         # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
+
+        # self.kp = np.array([34.18, 34.18, 34.18])
+        # self.kd = np.array([3.42, 3.42, 3.42]) 
+        # self.ki = np.array([0.0, 0.0, 0.0])
         
         
-        self.declare_parameter('kp', '[0.001, 0.001, 0.001]')
-        self.declare_parameter('kd', '[0.001, 0.001, 0.001]')
+        # self.kp = np.array([9.72, 9.72, 9.72])
+        # self.kd = np.array([0.22, 0.22, 0.22]) 
+        # self.ki = np.array([0.0, 0.0, 0.0])
+
+        self.declare_parameter('kp', '[0.9, 0.72, 9.72]')
+        self.declare_parameter('kd', '[0.08, 0.022, 0.22]')
         self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
         
 
@@ -164,9 +176,28 @@ def main(args=None):
         pass
     finally:
         if node.history_data:
+            out_dir = pathlib.Path(__file__).parent
+            csv_path = out_dir / 'robot_evaluation.csv'
             df = pd.DataFrame(node.history_data)
-            df.to_csv('robot_evaluation.csv', index=False)
-            node.get_logger().info("📊 Datos guardados en 'robot_evaluation.csv'")
+            df.to_csv(csv_path, index=False)
+            node.get_logger().info(f"📊 Datos guardados en '{csv_path}'")
+
+            # --- Gráfica trayectoria XY: lemniscata deseada vs real ---
+            fig, ax = plt.subplots(figsize=(8, 6))
+            ax.plot(df['des_x'].to_numpy(), df['des_y'].to_numpy(), 'b--', linewidth=1.5, label='Deseada (lemniscata)')
+            ax.plot(df['act_x'].to_numpy(), df['act_y'].to_numpy(), 'r-',  linewidth=1.0, label='Real (robot)')
+            ax.plot(df['des_x'].iloc[0], df['des_y'].iloc[0], 'go', markersize=8, label='Inicio')
+            ax.set_xlabel('X [m]')
+            ax.set_ylabel('Y [m]')
+            ax.set_title('Trayectoria XY — Lemniscata deseada vs real')
+            ax.legend()
+            ax.axis('equal')
+            ax.grid(True)
+            fig.tight_layout()
+            plot_path = out_dir / 'robot_trajectory_xy.png'
+            fig.savefig(plot_path, dpi=150)
+            plt.close(fig)
+            node.get_logger().info(f"📈 Gráfica guardada en '{plot_path}'")
         node.destroy_node()
         rclpy.shutdown()
 
