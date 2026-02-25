@@ -65,17 +65,20 @@ class CascadePID:
                  kp_vel: float, kd_vel: float,
                  deadband: float = 0.002,
                  alpha_vel: float = 0.08,
-                 max_slew: float = 0.02):
+                 max_slew: float = 0.005,
+                 alpha_out: float = 0.15):
         self.outer = PID(kp_pos, kd_pos, ki_pos,
                          deadband=deadband, alpha_d=0.15, integral_clamp=0.05)
         # Inner: solo P proporcional, sin derivada (ruidosa sobre vel estimada)
         self.inner = PID(kp_vel, 0.0, 0.0,
                          deadband=0.0, alpha_d=0.30)
-        self.alpha_vel     = alpha_vel  # filtro agresivo para vel estimada
-        self.max_slew      = max_slew   # máximo cambio de comando por iteración [m/s]
+        self.alpha_vel     = alpha_vel   # filtro para vel estimada
+        self.max_slew      = max_slew    # máx cambio de comando por tick [m/s]
+        self.alpha_out     = alpha_out   # filtro EMA en salida (0.1=muy suave, 1.0=sin filtro)
         self._vel_est      = 0.0
         self._prev_act_pos = None
         self._prev_cmd     = 0.0
+        self._smooth_cmd   = 0.0
 
     def reset(self):
         self.outer.reset()
@@ -83,6 +86,7 @@ class CascadePID:
         self._vel_est      = 0.0
         self._prev_act_pos = None
         self._prev_cmd     = 0.0
+        self._smooth_cmd   = 0.0
 
     def compute(self, pos_error: float, actual_pos: float,
                 vel_ff: float, dt: float) -> tuple[float, float, float]:
@@ -102,13 +106,16 @@ class CascadePID:
         vel_error    = vel_desired - self._vel_est
         command, _   = self.inner.compute(vel_error, dt)
 
-        # Rate limiter: evitar saltos bruscos entre iteraciones
+        # Rate limiter: limitar cambio máximo por tick
         delta = command - self._prev_cmd
         if abs(delta) > self.max_slew:
             command = self._prev_cmd + math.copysign(self.max_slew, delta)
         self._prev_cmd = command
 
-        return command, vel_desired, self._vel_est
+        # Filtro EMA en salida: suaviza picos residuales
+        self._smooth_cmd = self.alpha_out * command + (1.0 - self.alpha_out) * self._smooth_cmd
+
+        return self._smooth_cmd, vel_desired, self._vel_est
 
 
 class PositionController(Node):
@@ -117,13 +124,13 @@ class PositionController(Node):
 
         self.declare_parameter('output_topic', '/servo_server/delta_twist_cmds')
 
-        self.declare_parameter('kp_pos_x', 2.2)
-        self.declare_parameter('kp_pos_y', 2.6)
-        self.declare_parameter('kp_pos_z',  0.8)
+        self.declare_parameter('kp_pos_x', 0.5)
+        self.declare_parameter('kp_pos_y', 0.9)
+        self.declare_parameter('kp_pos_z', 0.5)
 
-        self.declare_parameter('kd_pos_x',  2.0)
-        self.declare_parameter('kd_pos_y',  2.0)
-        self.declare_parameter('kd_pos_z',  3.0)
+        self.declare_parameter('kd_pos_x', 0.001)
+        self.declare_parameter('kd_pos_y', 0.001)
+        self.declare_parameter('kd_pos_z', 0.01)
 
         self.declare_parameter('ki_pos_x', 0.0)
         self.declare_parameter('ki_pos_y', 0.0)
@@ -131,7 +138,7 @@ class PositionController(Node):
 
         self.declare_parameter('kp_vel_x', 0.5)
         self.declare_parameter('kp_vel_y', 0.5)
-        self.declare_parameter('kp_vel_z', 0.3)
+        self.declare_parameter('kp_vel_z', 0.5)
 
         self.declare_parameter('max_speed', 0.30)
         self.declare_parameter('deadband',  0.002)
