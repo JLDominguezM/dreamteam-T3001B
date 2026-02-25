@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 class FFPDAxis:
     def __init__(self, kp: float, kd: float,
                  deadband: float = 0.002,
-                 alpha_d: float = 0.08,
-                 max_slew: float = 0.003,
-                 alpha_out: float = 0.10):
+                 alpha_d: float = 0.04,
+                 max_slew: float = 0.0008,
+                 alpha_out: float = 0.025):
         self.kp        = kp
         self.kd        = kd
         self.deadband  = deadband
@@ -76,12 +76,12 @@ class PositionController(Node):
 
         self.declare_parameter('output_topic', '/servo_server/delta_twist_cmds')
 
-        self.declare_parameter('kp_x', 2.4)
-        self.declare_parameter('kp_y', 1.5)
-        self.declare_parameter('kp_z', 1.2)
+        self.declare_parameter('kp_x', 0.3)
+        self.declare_parameter('kp_y', 0.8)
+        self.declare_parameter('kp_z', 0.7)
 
-        self.declare_parameter('kd_x', 0.08)
-        self.declare_parameter('kd_y', 0.08)
+        self.declare_parameter('kd_x', 0.5)
+        self.declare_parameter('kd_y', 0.2)
         self.declare_parameter('kd_z', 0.1)
 
         self.declare_parameter('max_speed', 0.30)
