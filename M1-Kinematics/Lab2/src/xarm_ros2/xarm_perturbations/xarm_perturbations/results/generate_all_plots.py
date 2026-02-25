@@ -174,11 +174,10 @@ def main():
             continue
         folders = sorted([f for f in exp_dir.iterdir()
                           if f.is_dir() and (f / "robot_evaluation.csv").exists()])
-        for folder in folders:
-            run_name = folder.name
-            label = f"{EXP_LABELS[exp]} — {run_name}"
-            prefix = f"{exp}_{run_name}"
-            print(f"  {exp}/{run_name} ...", end=" ")
+        for run_idx, folder in enumerate(folders, start=1):
+            label = f"{EXP_LABELS[exp]} {run_idx}"
+            prefix = f"{exp}_{run_idx}"
+            print(f"  {exp}/{folder.name} → {label} ...", end=" ")
             d = load_csv(folder / "robot_evaluation.csv")
 
             plot_desired_vs_actual(d, label, OUT_DIR / f"{prefix}_desired_vs_actual.png")
