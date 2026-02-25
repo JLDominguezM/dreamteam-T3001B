@@ -9,3 +9,7 @@ Max_abs_err_z:   0.000527 m
 Max_abs_err_3D:  0.053547 m
 Samples:         1449
 Duration:        29.26 s
+
+self.declare_parameter("kp", [10.0, 8.0, 8.0])
+self.declare_parameter("kd", [0.2, 0.2, 0.2])
+self.declare_parameter("ki", [0.0, 0.0, 0.0])
