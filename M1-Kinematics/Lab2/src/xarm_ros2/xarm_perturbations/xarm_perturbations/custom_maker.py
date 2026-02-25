@@ -23,11 +23,11 @@ class PositionController(Node):
         # ── Parameters ────────────────────────────────────────────
         self.declare_parameter("output_topic", "/servo_server/delta_twist_cmds")
 
-        self.declare_parameter("kp", [1.5, 1.2, 1.2])
-        self.declare_parameter("kd", [0.1, 0.1, 0.1])
-        self.declare_parameter("ki", [0.1, 0.1, 0.1])
+        self.declare_parameter("kp", [13.0, 13.0, 3.5])
+        self.declare_parameter("kd", [0.2, 0.2, 0.4])
+        self.declare_parameter("ki", [0.0, 0.0, 0.0])
         
-        self.declare_parameter("max_speed", 0.12)
+        self.declare_parameter("max_speed", 0.25)
         self.declare_parameter("deadband", 0.001)
         self.declare_parameter("integral_max", 0.05)
         self.declare_parameter("derivative_filter_freq", 8.0)

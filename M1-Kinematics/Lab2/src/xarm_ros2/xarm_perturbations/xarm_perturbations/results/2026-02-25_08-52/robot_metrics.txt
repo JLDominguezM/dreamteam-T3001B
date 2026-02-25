@@ -1,0 +1,11 @@
+=== EVALUATION RESULTS ===
+RMSE_x:          0.031467 m
+RMSE_y:          0.020371 m
+RMSE_z:          0.001601 m
+RMSE_total:      0.037519 m
+Max_abs_err_x:   0.052792 m
+Max_abs_err_y:   0.034604 m
+Max_abs_err_z:   0.003640 m
+Max_abs_err_3D:  0.062493 m
+Samples:         1659
+Duration:        34.04 s
