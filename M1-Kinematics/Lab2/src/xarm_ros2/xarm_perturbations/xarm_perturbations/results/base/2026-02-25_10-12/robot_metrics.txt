@@ -1,0 +1,16 @@
+=== EVALUATION RESULTS ===
+RMSE_x:          0.028135 m
+RMSE_y:          0.020182 m
+RMSE_z:          0.000461 m
+RMSE_total:      0.034628 m
+Max_abs_err_x:   0.044232 m
+Max_abs_err_y:   0.031328 m
+Max_abs_err_z:   0.000900 m
+Max_abs_err_3D:  0.054186 m
+Samples:         1597
+Duration:        31.92 s
+
+
+self.declare_parameter("kp", [10.0, 8.0, 8.0])
+self.declare_parameter("kd", [0.3, 0.3, 0.3])
+self.declare_parameter("ki", [0.0, 0.0, 0.0])
