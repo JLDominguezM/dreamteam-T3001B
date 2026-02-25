@@ -23,15 +23,15 @@ class PositionController(Node):
         # ── Parameters ────────────────────────────────────────────
         self.declare_parameter("output_topic", "/servo_server/delta_twist_cmds")
 
-        self.declare_parameter("kp", [13.0, 13.0, 3.5])
-        self.declare_parameter("kd", [0.2, 0.2, 0.4])
+        self.declare_parameter("kp", [8.0, 7.0, 3.0])
+        self.declare_parameter("kd", [0.4, 0.4, 0.35])
         self.declare_parameter("ki", [0.0, 0.0, 0.0])
-        
+
         self.declare_parameter("max_speed", 0.25)
         self.declare_parameter("deadband", 0.001)
         self.declare_parameter("integral_max", 0.05)
         self.declare_parameter("derivative_filter_freq", 8.0)
-        self.declare_parameter("radius", 0.06)
+        self.declare_parameter("radius", 0.08)
         self.declare_parameter("frequency", 0.06)
         self.declare_parameter("soft_start_duration", 3.0)
 
@@ -104,7 +104,7 @@ class PositionController(Node):
         s = 0.5 * (1.0 - math.cos(math.pi * t_sec / T)) if t_sec < T else 1.0
 
         x_rel = self.radius * math.sin(w * t_sec)
-        y_rel = self.radius * math.sin(w * t_sec) * math.cos(w * t_sec)
+        y_rel = self.radius * math.sin(2 * w * t_sec) / 2.0
 
         return np.array([cx + s * x_rel, cy + s * y_rel, cz])
 
