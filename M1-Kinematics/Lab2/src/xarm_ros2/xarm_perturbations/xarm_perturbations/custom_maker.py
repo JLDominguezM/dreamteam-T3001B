@@ -11,15 +11,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# FFPDAxis — Feedforward + PD + doble filtro EMA (segundo orden)
-#
-#   cmd = EMA2( EMA1( slew_limit( vel_ff + Kp*e + Kd*de/dt ) ) )
-#
-# Doble EMA = filtro de segundo orden, elimina ruido de alta frecuencia
-# sin introducir el lag excesivo de un solo EMA con alpha muy bajo.
-# ─────────────────────────────────────────────────────────────────────────────
 class FFPDAxis:
     def __init__(self, kp: float, kd: float,
                  deadband: float = 0.002,
@@ -79,10 +70,6 @@ class FFPDAxis:
 
         return self._ema2
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Nodo ROS 2
-# ─────────────────────────────────────────────────────────────────────────────
 class PositionController(Node):
     def __init__(self):
         super().__init__("position_controller")
@@ -101,12 +88,14 @@ class PositionController(Node):
         self.declare_parameter('deadband',  0.002)
         self.declare_parameter('radius',    0.06)
         self.declare_parameter('frequency', 0.06)
+        self.declare_parameter('soft_start_duration', 3.0)  # segundos de rampa
 
         output_topic   = self.get_parameter('output_topic').value
         self.max_speed = float(self.get_parameter('max_speed').value)
         deadband       = float(self.get_parameter('deadband').value)
         self.radius    = float(self.get_parameter('radius').value)
         self.frequency = float(self.get_parameter('frequency').value)
+        self.soft_start_dur = float(self.get_parameter('soft_start_duration').value)
 
         kp = [self.get_parameter(f'kp_{a}').value for a in ('x', 'y', 'z')]
         kd = [self.get_parameter(f'kd_{a}').value for a in ('x', 'y', 'z')]
@@ -140,14 +129,26 @@ class PositionController(Node):
     def _lemniscate(self, t_sec: float) -> tuple[np.ndarray, np.ndarray]:
         cx, cy, cz = self.center
         w = 2.0 * math.pi * self.frequency
-        pos = np.array([
-            cx + self.radius * math.sin(w * t_sec),
-            cy + self.radius * math.sin(w * t_sec) * math.cos(w * t_sec),
-            cz
-        ])
+
+        # Soft start: rampa suave de 0→1 usando coseno (sin discontinuidad)
+        T = self.soft_start_dur
+        if t_sec < T:
+            s    = 0.5 * (1.0 - math.cos(math.pi * t_sec / T))  # 0→1 suave
+            ds   = 0.5 * math.pi / T * math.sin(math.pi * t_sec / T)
+        else:
+            s    = 1.0
+            ds   = 0.0
+
+        x_rel  = self.radius * math.sin(w * t_sec)
+        y_rel  = self.radius * math.sin(w * t_sec) * math.cos(w * t_sec)
+        vx_raw = self.radius * w * math.cos(w * t_sec)
+        vy_raw = self.radius * w * math.cos(2.0 * w * t_sec)
+
+        pos = np.array([cx + s * x_rel, cy + s * y_rel, cz])
+        # d/dt(s * f(t)) = ds * f(t) + s * f'(t)
         vel_ff = np.array([
-            self.radius * w * math.cos(w * t_sec),
-            self.radius * w * math.cos(2.0 * w * t_sec),
+            ds * x_rel + s * vx_raw,
+            ds * y_rel + s * vy_raw,
             0.0
         ])
         return pos, vel_ff
@@ -201,7 +202,6 @@ class PositionController(Node):
         self.servo_pub.publish(cmd)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 def main(args=None):
     rclpy.init(args=args)
     node = PositionController()
@@ -225,28 +225,93 @@ def main(args=None):
             df.to_csv(csv_path, index=False)
             node.get_logger().info(f"Datos guardados en '{csv_path}'")
 
-            fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+            # ── Métricas cuantitativas ──────────────────────────────────
+            t   = df['time'].to_numpy()
+            ex  = df['err_x'].to_numpy()
+            ey  = df['err_y'].to_numpy()
+            ez  = df['err_z'].to_numpy()
+            e_total = np.sqrt(ex**2 + ey**2 + ez**2)
 
-            ax = axes[0]
-            ax.plot(df['des_x'], df['des_y'], 'b--', lw=1.5, label='Deseada')
-            ax.plot(df['act_x'], df['act_y'], 'r-',  lw=1.0, label='Real')
-            ax.plot(df['des_x'].iloc[0], df['des_y'].iloc[0], 'go', ms=8, label='Inicio')
-            ax.set_xlabel('X [m]'); ax.set_ylabel('Y [m]')
-            ax.set_title('Trayectoria XY'); ax.legend(); ax.axis('equal'); ax.grid(True)
+            rmse_x   = float(np.sqrt(np.mean(ex**2)))
+            rmse_y   = float(np.sqrt(np.mean(ey**2)))
+            rmse_z   = float(np.sqrt(np.mean(ez**2)))
+            rmse_tot = float(np.sqrt(np.mean(e_total**2)))
+            max_err  = float(np.max(np.abs(e_total)))
 
-            ax2 = axes[1]
-            t = df['time']
-            ax2.plot(t, df['err_x'], label='err_x')
-            ax2.plot(t, df['err_y'], label='err_y')
-            ax2.plot(t, df['err_z'], label='err_z')
-            ax2.set_xlabel('Tiempo [s]'); ax2.set_ylabel('Error [m]')
-            ax2.set_title('Error de posición por eje'); ax2.legend(); ax2.grid(True)
+            node.get_logger().info(
+                f"RMSE_x={rmse_x:.5f} m | RMSE_y={rmse_y:.5f} m | "
+                f"RMSE_z={rmse_z:.5f} m | RMSE_total={rmse_tot:.5f} m | "
+                f"Max_error={max_err:.5f} m"
+            )
 
-            fig.tight_layout()
-            plot_path = out_dir / 'robot_trajectory_xy.png'
-            fig.savefig(plot_path, dpi=150)
-            plt.close(fig)
-            node.get_logger().info(f"Grafica guardada en '{plot_path}'")
+            metrics_path = out_dir / 'robot_metrics.txt'
+            with open(metrics_path, 'w') as f:
+                f.write(f"RMSE_x:     {rmse_x:.6f} m\n")
+                f.write(f"RMSE_y:     {rmse_y:.6f} m\n")
+                f.write(f"RMSE_z:     {rmse_z:.6f} m\n")
+                f.write(f"RMSE_total: {rmse_tot:.6f} m\n")
+                f.write(f"Max_error:  {max_err:.6f} m\n")
+                f.write(f"Samples:    {len(df)}\n")
+                f.write(f"Duration:   {t[-1]:.2f} s\n")
+
+            # ── Gráfica 1: Trayectoria XY ──────────────────────────────
+            fig1, ax1 = plt.subplots(figsize=(8, 7))
+            ax1.plot(df['des_x'].to_numpy(), df['des_y'].to_numpy(),
+                     'b--', lw=1.5, label='Deseada')
+            ax1.plot(df['act_x'].to_numpy(), df['act_y'].to_numpy(),
+                     'r-', lw=1.0, label='Real')
+            ax1.plot(df['des_x'].iloc[0], df['des_y'].iloc[0],
+                     'go', ms=8, label='Inicio')
+            ax1.set_xlabel('X [m]'); ax1.set_ylabel('Y [m]')
+            ax1.set_title('Trayectoria XY — Lemniscata deseada vs real')
+            ax1.legend(); ax1.axis('equal'); ax1.grid(True)
+            fig1.tight_layout()
+            fig1.savefig(out_dir / 'plot_trajectory_xy.png', dpi=150)
+            plt.close(fig1)
+
+            # ── Gráfica 2: Desired vs Actual por eje ───────────────────
+            fig2, axes2 = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
+            for i, (axis_label, dcol, acol) in enumerate(
+                [('X', 'des_x', 'act_x'),
+                 ('Y', 'des_y', 'act_y'),
+                 ('Z', 'des_z', 'act_z')]):
+                axes2[i].plot(t, df[dcol].to_numpy(), 'b--', lw=1.2, label=f'Deseada {axis_label}')
+                axes2[i].plot(t, df[acol].to_numpy(), 'r-',  lw=0.8, label=f'Real {axis_label}')
+                axes2[i].set_ylabel(f'{axis_label} [m]')
+                axes2[i].legend(loc='upper right'); axes2[i].grid(True)
+            axes2[2].set_xlabel('Tiempo [s]')
+            axes2[0].set_title('Posición deseada vs real por eje')
+            fig2.tight_layout()
+            fig2.savefig(out_dir / 'plot_desired_vs_actual.png', dpi=150)
+            plt.close(fig2)
+
+            # ── Gráfica 3: Error por eje ───────────────────────────────
+            fig3, ax3 = plt.subplots(figsize=(12, 5))
+            ax3.plot(t, ex * 1000, label='err_x')
+            ax3.plot(t, ey * 1000, label='err_y')
+            ax3.plot(t, ez * 1000, label='err_z')
+            ax3.plot(t, e_total * 1000, 'k--', lw=0.8, label='||error||')
+            ax3.set_xlabel('Tiempo [s]'); ax3.set_ylabel('Error [mm]')
+            ax3.set_title(f'Error de posición  —  RMSE_total={rmse_tot*1000:.2f} mm, Max={max_err*1000:.2f} mm')
+            ax3.legend(); ax3.grid(True)
+            fig3.tight_layout()
+            fig3.savefig(out_dir / 'plot_error.png', dpi=150)
+            plt.close(fig3)
+
+            # ── Gráfica 4: Velocidad comandada ─────────────────────────
+            fig4, ax4 = plt.subplots(figsize=(12, 5))
+            ax4.plot(t, df['cmd_x'].to_numpy(), label='cmd_x')
+            ax4.plot(t, df['cmd_y'].to_numpy(), label='cmd_y')
+            ax4.plot(t, df['cmd_z'].to_numpy(), label='cmd_z')
+            ax4.plot(t, df['vel_mag'].to_numpy(), 'k--', lw=0.8, label='||vel||')
+            ax4.set_xlabel('Tiempo [s]'); ax4.set_ylabel('Velocidad [m/s]')
+            ax4.set_title('Velocidad comandada por eje')
+            ax4.legend(); ax4.grid(True)
+            fig4.tight_layout()
+            fig4.savefig(out_dir / 'plot_velocity.png', dpi=150)
+            plt.close(fig4)
+
+            node.get_logger().info(f"Graficas guardadas en '{out_dir}'")
 
         node.destroy_node()
         if rclpy.ok():
