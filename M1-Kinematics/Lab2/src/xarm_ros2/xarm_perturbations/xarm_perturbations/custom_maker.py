@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import math
-import ast
 import pathlib
 import numpy as np
 import rclpy
@@ -12,80 +11,190 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+class PID:
+    def __init__(self, kp: float, kd: float, ki: float,
+                 deadband: float = 0.0, alpha_d: float = 0.2,
+                 integral_clamp: float = 0.1):
+        self.kp = kp
+        self.kd = kd
+        self.ki = ki
+        self.deadband       = deadband
+        self.alpha_d        = alpha_d
+        self.integral_clamp = integral_clamp
+        self._prev_error  = 0.0
+        self._integral    = 0.0
+        self._prev_d_filt = 0.0
+
+    def reset(self):
+        self._prev_error  = 0.0
+        self._integral    = 0.0
+        self._prev_d_filt = 0.0
+
+    def compute(self, raw_error: float, dt: float) -> tuple[float, float]:
+        if self.deadband > 0.0 and abs(raw_error) < self.deadband:
+            error = 0.0
+        elif self.deadband > 0.0:
+            error = raw_error - math.copysign(self.deadband, raw_error)
+        else:
+            error = raw_error
+
+        p = self.kp * error
+
+        raw_d  = (error - self._prev_error) / dt
+        d_filt = self.alpha_d * raw_d + (1.0 - self.alpha_d) * self._prev_d_filt
+        d      = self.kd * d_filt
+
+        v_prelim   = p + d + self.ki * self._integral
+        saturating = abs(v_prelim) >= 1e6
+        same_sign  = math.copysign(1, error) == math.copysign(1, v_prelim)
+        if abs(error) > 0.0 and not (saturating and same_sign):
+            self._integral += error * dt
+        self._integral    = max(-self.integral_clamp,
+                                min(self.integral_clamp, self._integral))
+        i = self.ki * self._integral
+
+        out               = p + i + d
+        self._prev_error  = error
+        self._prev_d_filt = d_filt
+        return out, error
+
+
+class CascadePID:
+    def __init__(self,
+                 kp_pos: float, kd_pos: float, ki_pos: float,
+                 kp_vel: float, kd_vel: float,
+                 deadband: float = 0.002,
+                 alpha_vel: float = 0.08,
+                 max_slew: float = 0.02):
+        self.outer = PID(kp_pos, kd_pos, ki_pos,
+                         deadband=deadband, alpha_d=0.15, integral_clamp=0.05)
+        # Inner: solo P proporcional, sin derivada (ruidosa sobre vel estimada)
+        self.inner = PID(kp_vel, 0.0, 0.0,
+                         deadband=0.0, alpha_d=0.30)
+        self.alpha_vel     = alpha_vel  # filtro agresivo para vel estimada
+        self.max_slew      = max_slew   # máximo cambio de comando por iteración [m/s]
+        self._vel_est      = 0.0
+        self._prev_act_pos = None
+        self._prev_cmd     = 0.0
+
+    def reset(self):
+        self.outer.reset()
+        self.inner.reset()
+        self._vel_est      = 0.0
+        self._prev_act_pos = None
+        self._prev_cmd     = 0.0
+
+    def compute(self, pos_error: float, actual_pos: float,
+                vel_ff: float, dt: float) -> tuple[float, float, float]:
+        """Retorna (comando_velocidad, vel_deseada, vel_estimada)"""
+        # Velocidad estimada con filtro EMA agresivo (anti-ruido)
+        if self._prev_act_pos is None:
+            self._prev_act_pos = actual_pos
+        raw_vel       = (actual_pos - self._prev_act_pos) / dt
+        self._vel_est = self.alpha_vel * raw_vel + (1.0 - self.alpha_vel) * self._vel_est
+        self._prev_act_pos = actual_pos
+
+        # Loop externo: posición → corrección de velocidad
+        vel_corr, _  = self.outer.compute(pos_error, dt)
+        vel_desired  = vel_ff + vel_corr
+
+        # Loop interno: solo P sobre error de velocidad
+        vel_error    = vel_desired - self._vel_est
+        command, _   = self.inner.compute(vel_error, dt)
+
+        # Rate limiter: evitar saltos bruscos entre iteraciones
+        delta = command - self._prev_cmd
+        if abs(delta) > self.max_slew:
+            command = self._prev_cmd + math.copysign(self.max_slew, delta)
+        self._prev_cmd = command
+
+        return command, vel_desired, self._vel_est
+
+
 class PositionController(Node):
     def __init__(self):
         super().__init__("position_controller")
 
         self.declare_parameter('output_topic', '/servo_server/delta_twist_cmds')
-        
-        # --- GANANCIAS HÍBRIDAS DEFINITIVAS ---
-        # base
-        # self.declare_parameter('kp', '[32.18, 32.18, 0.0]')
-        # self.declare_parameter('kd', '[3.42, 3.42, 0.0]')
-        # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
 
-        # Sine
-        # self.declare_parameter('kp', '[130.315, 100.18, 10.0]')
-        # self.declare_parameter('kd', '[8.034, 7.42, 6.0]')
-        # self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
+        self.declare_parameter('kp_pos_x', 2.2)
+        self.declare_parameter('kp_pos_y', 2.6)
+        self.declare_parameter('kp_pos_z',  0.8)
 
-        self.declare_parameter('kp', '[130.315, 100.18, 10.0]')
-        self.declare_parameter('kd', '[8.034, 7.42, 6.0]')
-        self.declare_parameter('ki', '[0.0, 0.0, 0.0]')
+        self.declare_parameter('kd_pos_x',  2.0)
+        self.declare_parameter('kd_pos_y',  2.0)
+        self.declare_parameter('kd_pos_z',  3.0)
 
-        self.declare_parameter('max_speed', 0.10)
-        self.declare_parameter('deadband', 0.002)
-        
-        self.declare_parameter('radius', 0.06)
+        self.declare_parameter('ki_pos_x', 0.0)
+        self.declare_parameter('ki_pos_y', 0.0)
+        self.declare_parameter('ki_pos_z', 0.0)
+
+        self.declare_parameter('kp_vel_x', 0.5)
+        self.declare_parameter('kp_vel_y', 0.5)
+        self.declare_parameter('kp_vel_z', 0.3)
+
+        self.declare_parameter('max_speed', 0.30)
+        self.declare_parameter('deadband',  0.002)
+        self.declare_parameter('radius',    0.06)
         self.declare_parameter('frequency', 0.06)
 
-        output_topic = self.get_parameter('output_topic').value
-        self.kp = np.array(ast.literal_eval(self.get_parameter('kp').value), dtype=float)
-        self.kd = np.array(ast.literal_eval(self.get_parameter('kd').value), dtype=float)
-        self.ki = np.array(ast.literal_eval(self.get_parameter('ki').value), dtype=float)
+        output_topic   = self.get_parameter('output_topic').value
         self.max_speed = float(self.get_parameter('max_speed').value)
-        self.deadband = float(self.get_parameter('deadband').value)
-        self.radius = float(self.get_parameter('radius').value)
+        deadband       = float(self.get_parameter('deadband').value)
+        self.radius    = float(self.get_parameter('radius').value)
         self.frequency = float(self.get_parameter('frequency').value)
 
-        self.servo_pub = self.create_publisher(TwistStamped, output_topic, 10)
-        self.tf_buffer = Buffer()
+        kp_pos = [self.get_parameter(f'kp_pos_{a}').value for a in ('x', 'y', 'z')]
+        kd_pos = [self.get_parameter(f'kd_pos_{a}').value for a in ('x', 'y', 'z')]
+        ki_pos = [self.get_parameter(f'ki_pos_{a}').value for a in ('x', 'y', 'z')]
+        kp_vel = [self.get_parameter(f'kp_vel_{a}').value for a in ('x', 'y', 'z')]
+
+        self._cascades = [
+            CascadePID(kp_pos[i], kd_pos[i], ki_pos[i],
+                       kp_vel[i], 0.0, deadband)
+            for i in range(3)
+        ]
+
+        self.servo_pub   = self.create_publisher(TwistStamped, output_topic, 10)
+        self.tf_buffer   = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        # Variables
-        self.prev_error = np.zeros(3)
-        self.integral_error = np.zeros(3)
-        self.prev_d_error_filtered = np.zeros(3)
         self.history_data = []
-        
-        self.center = None
+        self.center     = None
         self.start_time = self.get_clock().now()
-        self.prev_time = self.get_clock().now()
+        self.prev_time  = self.get_clock().now()
 
         self.timer = self.create_timer(0.02, self._control_loop)
-        self.get_logger().info(f"🦸 Multiverse Savior PID Started | Kp: {self.kp}")
+        self.get_logger().info(
+            f"Cascada FF+PID iniciada | "
+            f"Kp_pos={kp_pos} Kd_pos={kd_pos} | "
+            f"Kp_vel={kp_vel}"
+        )
 
     def _read_pose(self):
         try:
-            trans = self.tf_buffer.lookup_transform("link_base", "link_eef", rclpy.time.Time())
-            return np.array([
-                trans.transform.translation.x, 
-                trans.transform.translation.y, 
-                trans.transform.translation.z
-            ])
+            t = self.tf_buffer.lookup_transform("link_base", "link_eef", rclpy.time.Time())
+            return np.array([t.transform.translation.x,
+                             t.transform.translation.y,
+                             t.transform.translation.z])
         except Exception:
             return None
 
-    def _custom_target(self, t_sec: float):
+    def _lemniscate(self, t_sec: float) -> tuple[np.ndarray, np.ndarray]:
+        """Posición + velocidad feedforward analítica (derivada exacta)."""
         cx, cy, cz = self.center
         w = 2.0 * math.pi * self.frequency
-        
-        # Nueva ecuación Lemniscata: Arranca EXACTAMENTE en (0,0). 
-        # Cero fase inicial, seguimiento perfecto garantizado.
-        x_rel = self.radius * math.sin(w * t_sec)
-        y_rel = self.radius * math.sin(w * t_sec) * math.cos(w * t_sec)
-        
-        return np.array([cx + x_rel, cy + y_rel, cz])
+        pos = np.array([
+            cx + self.radius * math.sin(w * t_sec),
+            cy + self.radius * math.sin(w * t_sec) * math.cos(w * t_sec),
+            cz
+        ])
+        vel_ff = np.array([
+            self.radius * w * math.cos(w * t_sec),
+            self.radius * w * math.cos(2.0 * w * t_sec),
+            0.0
+        ])
+        return pos, vel_ff
 
     def _control_loop(self):
         current_pos = self._read_pose()
@@ -93,70 +202,56 @@ class PositionController(Node):
             return
 
         now = self.get_clock().now()
-        dt = max((now - self.prev_time).nanoseconds / 1e9, 0.001)
+        dt  = max((now - self.prev_time).nanoseconds / 1e9, 0.001)
 
         if self.center is None:
             self.center = current_pos.copy()
-            self.get_logger().info("Centro registrado. Iniciando trayectoria perfecta.")
             self.start_time = now
+            self.get_logger().info("Centro registrado. Iniciando trayectoria.")
 
         t = (now - self.start_time).nanoseconds / 1e9
-        target_pos = self._custom_target(t)
-
-        # 1. Error directo y Deadband continuo
+        target_pos, vel_ff = self._lemniscate(t)
         raw_error = target_pos - current_pos
-        error = np.where(np.abs(raw_error) < self.deadband, 0.0, raw_error - np.sign(raw_error) * self.deadband)
 
-        p_term = self.kp * error
+        v_final     = np.zeros(3)
+        vel_desired = np.zeros(3)
+        vel_actual  = np.zeros(3)
+        for i, cascade in enumerate(self._cascades):
+            v_final[i], vel_desired[i], vel_actual[i] = cascade.compute(
+                raw_error[i], current_pos[i], vel_ff[i], dt
+            )
 
-        # 2. Derivada con filtro
-        raw_d_error = (error - self.prev_error) / dt
-        alpha_d = 0.2 
-        d_error_filtered = alpha_d * raw_d_error + (1 - alpha_d) * self.prev_d_error_filtered
-        d_term = self.kd * d_error_filtered
-
-        # 3. Integración condicionada (desactivada por Ki=0, pero lista por si acaso)
-        v_preliminary = p_term + d_term + (self.ki * self.integral_error)
-        for i in range(3):
-            if abs(error[i]) > 0.0:
-                if abs(v_preliminary[i]) < self.max_speed or (np.sign(error[i]) != np.sign(v_preliminary[i])):
-                    self.integral_error[i] += error[i] * dt
-        
-        self.integral_error = np.clip(self.integral_error, -0.015, 0.015)
-        i_term = self.ki * self.integral_error
-
-        # 4. Cálculo final y Saturación correcta
-        v_final = p_term + i_term + d_term
-        
-        v_norm_commanded = np.linalg.norm(v_final)
-        if v_norm_commanded > self.max_speed:
-            v_final = (v_final / v_norm_commanded) * self.max_speed
-            v_norm_commanded = self.max_speed # CORRECCIÓN: Guardar el valor real comandado
+        v_norm = np.linalg.norm(v_final)
+        if v_norm > self.max_speed:
+            v_final = (v_final / v_norm) * self.max_speed
+            v_norm  = self.max_speed
 
         self._publish_twist(v_final)
 
-        # 5. Registro de Evaluación Preciso
         self.history_data.append({
-            'time': t,
-            'des_x': target_pos[0], 'des_y': target_pos[1], 'des_z': target_pos[2],
-            'act_x': current_pos[0], 'act_y': current_pos[1], 'act_z': current_pos[2],
-            'err_x': raw_error[0], 'err_y': raw_error[1], 'err_z': raw_error[2],
-            'vel_mag': v_norm_commanded
+            'time':   t,
+            'des_x':  target_pos[0],  'des_y':  target_pos[1],  'des_z':  target_pos[2],
+            'act_x':  current_pos[0], 'act_y':  current_pos[1], 'act_z':  current_pos[2],
+            'err_x':  raw_error[0],   'err_y':  raw_error[1],   'err_z':  raw_error[2],
+            'vff_x':  vel_ff[0],      'vff_y':  vel_ff[1],
+            'vdes_x': vel_desired[0], 'vdes_y': vel_desired[1],
+            'vact_x': vel_actual[0],  'vact_y': vel_actual[1],
+            'vel_mag': v_norm,
         })
 
-        self.prev_error = error
-        self.prev_d_error_filtered = d_error_filtered
         self.prev_time = now
 
     def _publish_twist(self, v_xyz: np.ndarray):
         cmd = TwistStamped()
-        cmd.header.stamp = self.get_clock().now().to_msg()
+        cmd.header.stamp    = self.get_clock().now().to_msg()
         cmd.header.frame_id = "link_base"
-        cmd.twist.linear.x = float(v_xyz[0])
-        cmd.twist.linear.y = float(v_xyz[1])
-        cmd.twist.linear.z = float(v_xyz[2])
+        cmd.twist.linear.x  = float(v_xyz[0])
+        cmd.twist.linear.y  = float(v_xyz[1])
+        cmd.twist.linear.z  = float(v_xyz[2])
         self.servo_pub.publish(cmd)
 
+
+# ─────────────────────────────────────────────────────────────────────────────
 def main(args=None):
     rclpy.init(args=args)
     node = PositionController()
@@ -166,30 +261,47 @@ def main(args=None):
         pass
     finally:
         if node.history_data:
-            out_dir = pathlib.Path(__file__).parent
-            csv_path = out_dir / 'robot_evaluation.csv'
-            df = pd.DataFrame(node.history_data)
-            df.to_csv(csv_path, index=False)
-            node.get_logger().info(f"📊 Datos guardados en '{csv_path}'")
+            _p = pathlib.Path(__file__).resolve()
+            out_dir = _p.parent
+            for parent in _p.parents:
+                if parent.name == 'install':
+                    src = parent.parent / 'src' / 'xarm_ros2' / 'xarm_perturbations' / 'xarm_perturbations'
+                    if src.exists():
+                        out_dir = src
+                    break
 
-            # --- Gráfica trayectoria XY: lemniscata deseada vs real ---
-            fig, ax = plt.subplots(figsize=(8, 6))
-            ax.plot(df['des_x'].to_numpy(), df['des_y'].to_numpy(), 'b--', linewidth=1.5, label='Deseada (lemniscata)')
-            ax.plot(df['act_x'].to_numpy(), df['act_y'].to_numpy(), 'r-',  linewidth=1.0, label='Real (robot)')
-            ax.plot(df['des_x'].iloc[0], df['des_y'].iloc[0], 'go', markersize=8, label='Inicio')
-            ax.set_xlabel('X [m]')
-            ax.set_ylabel('Y [m]')
-            ax.set_title('Trayectoria XY — Lemniscata deseada vs real')
-            ax.legend()
-            ax.axis('equal')
-            ax.grid(True)
+            df = pd.DataFrame(node.history_data)
+            csv_path = out_dir / 'robot_evaluation.csv'
+            df.to_csv(csv_path, index=False)
+            node.get_logger().info(f"Datos guardados en '{csv_path}'")
+
+            fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+            ax = axes[0]
+            ax.plot(df['des_x'], df['des_y'], 'b--', lw=1.5, label='Deseada')
+            ax.plot(df['act_x'], df['act_y'], 'r-',  lw=1.0, label='Real')
+            ax.plot(df['des_x'].iloc[0], df['des_y'].iloc[0], 'go', ms=8, label='Inicio')
+            ax.set_xlabel('X [m]'); ax.set_ylabel('Y [m]')
+            ax.set_title('Trayectoria XY'); ax.legend(); ax.axis('equal'); ax.grid(True)
+
+            ax2 = axes[1]
+            t = df['time']
+            ax2.plot(t, df['err_x'], label='err_x')
+            ax2.plot(t, df['err_y'], label='err_y')
+            ax2.plot(t, df['err_z'], label='err_z')
+            ax2.set_xlabel('Tiempo [s]'); ax2.set_ylabel('Error [m]')
+            ax2.set_title('Error de posición por eje'); ax2.legend(); ax2.grid(True)
+
             fig.tight_layout()
             plot_path = out_dir / 'robot_trajectory_xy.png'
             fig.savefig(plot_path, dpi=150)
             plt.close(fig)
-            node.get_logger().info(f"📈 Gráfica guardada en '{plot_path}'")
+            node.get_logger().info(f"Grafica guardada en '{plot_path}'")
+
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
