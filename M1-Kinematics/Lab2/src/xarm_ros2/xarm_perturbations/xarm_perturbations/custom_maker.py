@@ -76,13 +76,13 @@ class PositionController(Node):
 
         self.declare_parameter('output_topic', '/servo_server/delta_twist_cmds')
 
-        self.declare_parameter('kp_x', 2.2)
-        self.declare_parameter('kp_y', 1.8)
-        self.declare_parameter('kp_z', 0.8)
+        self.declare_parameter('kp_x', 2.4)
+        self.declare_parameter('kp_y', 1.5)
+        self.declare_parameter('kp_z', 1.2)
 
-        self.declare_parameter('kd_x', 0.2)
-        self.declare_parameter('kd_y', 0.2)
-        self.declare_parameter('kd_z', 0.2)
+        self.declare_parameter('kd_x', 0.08)
+        self.declare_parameter('kd_y', 0.08)
+        self.declare_parameter('kd_z', 0.1)
 
         self.declare_parameter('max_speed', 0.30)
         self.declare_parameter('deadband',  0.002)
