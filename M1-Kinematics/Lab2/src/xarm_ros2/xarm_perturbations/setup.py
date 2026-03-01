@@ -28,6 +28,8 @@ setup(
         'circle_maker = xarm_perturbations.circle_maker:main',
         'custom_maker = xarm_perturbations.custom_maker:main',
         'new = xarm_perturbations.new:main',
+        'challenge_runner = xarm_perturbations.challenge_runner:main',
+        'challenge_analysis = xarm_perturbations.challenge_analysis:main',
     	],
     },
 
