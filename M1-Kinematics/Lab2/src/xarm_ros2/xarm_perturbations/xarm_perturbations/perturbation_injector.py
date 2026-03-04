@@ -15,23 +15,28 @@ class PerturbationGenerator(Node):
     def __init__(self):
         super().__init__("xarm_perturbation_injector")
 
+        # Publish to a dedicated signal topic — the runner subscribes and
+        # adds the perturbation to its own velocity command, so only one node
+        # ever writes to /servo_server/delta_twist_cmds.
         self.output_topic = self.declare_parameter(
-            "output_topic", "/servo_server/delta_twist_cmds"
+            "output_topic", "/perturbation_signal"
         ).value
 
         self.enabled = bool(self.declare_parameter("enabled", True).value)
         self.mode = str(self.declare_parameter("mode", "sine").value).lower().strip()  # off|sine|gaussian
 
         self.publish_period_s = float(self.declare_parameter("publish_period_s", 0.02).value)  # 50 Hz
-        self.max_lin = float(self.declare_parameter("max_linear_speed", 0.20).value)
+        # Clip limit in m/s — keep small to avoid destabilizing the controller.
+        # Recommended: 0.02–0.05 m/s for meaningful but survivable perturbations.
+        self.max_lin = float(self.declare_parameter("max_linear_speed", 0.05).value)
 
         # Sine
-        self.sine_freq_hz = float(self.declare_parameter("sine_freq_hz", 8.0).value)
+        self.sine_freq_hz = float(self.declare_parameter("sine_freq_hz", 2.0).value)
         self.sine_amp_linear = float(self.declare_parameter("sine_amp_linear", 0.02).value)
         self.sine_axis = str(self.declare_parameter("sine_axis", "x").value).lower().strip()  # x|y|z
 
-        # Gaussian
-        self.noise_std_linear = float(self.declare_parameter("noise_std_linear", 0.01).value)
+        # Gaussian — std in m/s. 0.01–0.03 is a noticeable but controllable range.
+        self.noise_std_linear = float(self.declare_parameter("noise_std_linear", 0.02).value)
 
         # Optional DC bias (mean command)
         base = self.declare_parameter("base_linear", [0.0, 0.0, 0.0]).value

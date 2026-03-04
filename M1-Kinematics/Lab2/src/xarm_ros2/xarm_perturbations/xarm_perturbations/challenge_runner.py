@@ -166,6 +166,15 @@ class ChallengeRunner(Node):
             TwistStamped, output_topic, 10
         )
 
+        # ── Perturbation signal subscriber ───────────────────────
+        # The perturbation_injector publishes to /perturbation_signal.
+        # The runner is the only node that writes to the servo topic, so
+        # perturbation is added cleanly to v_cmd each control cycle.
+        self.pert_signal = np.zeros(3)  # latest perturbation velocity [m/s]
+        self.create_subscription(
+            TwistStamped, "/perturbation_signal", self._pert_signal_cb, 10
+        )
+
         # ── Data logging ─────────────────────────────────────────
         self.log_data = {
             "time": [],
@@ -185,6 +194,7 @@ class ChallengeRunner(Node):
             "saturation": [],
             # Perturbation flag
             "pert_enabled": [],
+            "pert_signal": [],   # actual perturbation velocity applied [m/s]
         }
 
         # ── Perturbation enable publisher ─────────────────────────
@@ -228,6 +238,15 @@ class ChallengeRunner(Node):
                 msg.velocity[:N_JOINTS]
             ) if len(msg.velocity) >= N_JOINTS else np.zeros(N_JOINTS)
             self.joint_state_received = True
+
+    # ── Perturbation signal callback ─────────────────────────────
+    def _pert_signal_cb(self, msg: TwistStamped):
+        """Cache latest perturbation velocity [m/s] from perturbation_injector."""
+        self.pert_signal = np.array([
+            msg.twist.linear.x,
+            msg.twist.linear.y,
+            msg.twist.linear.z,
+        ])
 
     # ── Read end-effector position from TF ───────────────────────
     def _read_ee_pose(self) -> np.ndarray:
@@ -395,6 +414,10 @@ class ChallengeRunner(Node):
 
         v_cmd = kp_task * e_task + kd_task * (p_dot_ref - J @ qd_meas) + p_dot_ref
 
+        # Add perturbation signal (non-zero only during low-layer dwells
+        # when perturbation_injector is enabled via /perturbation_enable)
+        v_cmd = v_cmd + self.pert_signal
+
         # Apply velocity saturation
         v_cmd = np.clip(v_cmd, -self.max_speed, self.max_speed)
 
@@ -418,6 +441,7 @@ class ChallengeRunner(Node):
             self.controller.saturation_flags.tolist()
         )
         self.log_data["pert_enabled"].append(self.pert_active)
+        self.log_data["pert_signal"].append(self.pert_signal.tolist())
 
         # Progress logging
         if self.idx % int(self.control_rate * 5) == 0:
@@ -497,6 +521,7 @@ class ChallengeRunner(Node):
             for j in range(N_JOINTS):
                 header.append(f"sat{j+1}")
             header.append("pert_enabled")
+            header.extend(["pert_vx", "pert_vy", "pert_vz"])
             writer.writerow(header)
 
             for i in range(n_samples):
@@ -514,6 +539,7 @@ class ChallengeRunner(Node):
                 row.extend(self.log_data["cmd"][i])
                 row.extend(self.log_data["saturation"][i])
                 row.append(int(self.log_data["pert_enabled"][i]))
+                row.extend(self.log_data["pert_signal"][i])
                 writer.writerow(row)
 
         self.get_logger().info(f"  CSV saved: {csv_path}")
