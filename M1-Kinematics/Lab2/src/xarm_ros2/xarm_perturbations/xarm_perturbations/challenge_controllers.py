@@ -21,9 +21,6 @@ import numpy as np
 from dataclasses import dataclass, field
 
 
-# ═══════════════════════════════════════════════════════════════════════
-#  Safety Limits
-# ═══════════════════════════════════════════════════════════════════════
 TORQUE_LIMIT = 10.0       # Nm — per-joint torque saturation
 VELOCITY_LIMIT = 2.0      # rad/s — rate limiting
 EFFORT_RATE_LIMIT = 50.0  # Nm/s — max torque rate of change
@@ -31,9 +28,6 @@ EFFORT_RATE_LIMIT = 50.0  # Nm/s — max torque rate of change
 N_JOINTS = 6
 
 
-# ═══════════════════════════════════════════════════════════════════════
-#  PD Baseline Controller
-# ═══════════════════════════════════════════════════════════════════════
 @dataclass
 class PDParams:
     """PD controller gains and parameters."""
@@ -120,11 +114,6 @@ class PDController:
         self.prev_tau = tau.copy()
         return tau
 
-
-# ═══════════════════════════════════════════════════════════════════════
-#  Robot Dynamics Model (Simplified for xArm Lite 6)
-# ═══════════════════════════════════════════════════════════════════════
-
 # Approximate link masses and inertias from URDF
 LINK_MASSES = np.array([1.654, 1.166, 0.953, 1.284, 0.804, 0.131])  # kg
 GRAVITY = 9.81  # m/s^2
@@ -202,9 +191,6 @@ def get_robot_dynamics(q: np.ndarray, qd: np.ndarray):
     return M, Cqd, G, F
 
 
-# ═══════════════════════════════════════════════════════════════════════
-#  CTC Controller
-# ═══════════════════════════════════════════════════════════════════════
 @dataclass
 class CTCParams:
     """Computed Torque Control gains and parameters."""

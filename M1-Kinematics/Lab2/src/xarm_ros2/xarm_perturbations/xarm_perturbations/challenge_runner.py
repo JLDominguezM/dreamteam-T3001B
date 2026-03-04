@@ -25,8 +25,10 @@ from datetime import datetime
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, Point
 from sensor_msgs.msg import JointState
+from std_msgs.msg import ColorRGBA
+from visualization_msgs.msg import Marker, MarkerArray
 from tf2_ros import Buffer, TransformListener
 
 from .challenge_ik import (
@@ -46,9 +48,6 @@ from .challenge_controllers import (
     TORQUE_LIMIT, VELOCITY_LIMIT,
 )
 
-# ═══════════════════════════════════════════════════════════════════════
-#  Configuration
-# ═══════════════════════════════════════════════════════════════════════
 CONTROL_RATE_HZ = 50       # Hz — matches existing servo rate
 DT = 1.0 / CONTROL_RATE_HZ
 
@@ -188,6 +187,12 @@ class ChallengeRunner(Node):
             "pert_enabled": [],
         }
 
+        # ── RViz marker publishers ────────────────────────────────
+        self.marker_array_pub = self.create_publisher(
+            MarkerArray, '/rviz/trajectory_markers', 10
+        )
+        self.actual_points: list[Point] = []
+
         # ── Control state ────────────────────────────────────────
         self.idx = 0
         self.started = False
@@ -235,10 +240,61 @@ class ChallengeRunner(Node):
                 f"{np.round(np.degrees(self.home_position), 1)} deg"
             )
             self.get_logger().info("Starting control loop...")
+            self._publish_desired_path_marker()
             self.start_time = self.get_clock().now()
             self.control_timer = self.create_timer(
                 self.dt, self._control_loop
             )
+
+    # ── RViz marker helpers ─────────────────────────────────────
+    def _build_desired_marker(self) -> Marker:
+        """Build the desired trajectory as a green LINE_STRIP marker."""
+        marker = Marker()
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.header.frame_id = "link_base"
+        marker.ns = "desired_path"
+        marker.id = 0
+        marker.type = Marker.LINE_STRIP
+        marker.action = Marker.ADD
+        marker.scale.x = 0.003  # line width in meters
+        marker.color = ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0)
+        marker.pose.orientation.w = 1.0
+        for pos in self.p_des:
+            marker.points.append(
+                Point(x=float(pos[0]), y=float(pos[1]), z=float(pos[2]))
+            )
+        return marker
+
+    def _build_actual_marker(self) -> Marker:
+        """Build the actual path as a red LINE_STRIP marker."""
+        marker = Marker()
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.header.frame_id = "link_base"
+        marker.ns = "actual_path"
+        marker.id = 1
+        marker.type = Marker.LINE_STRIP
+        marker.action = Marker.ADD
+        marker.scale.x = 0.003
+        marker.color = ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0)
+        marker.pose.orientation.w = 1.0
+        marker.points = list(self.actual_points)
+        return marker
+
+    def _publish_desired_path_marker(self):
+        """Publish the desired trajectory as a MarkerArray."""
+        msg = MarkerArray()
+        msg.markers.append(self._build_desired_marker())
+        self.marker_array_pub.publish(msg)
+
+    def _publish_actual_path_marker(self, p: np.ndarray):
+        """Append current EE position and publish both paths as a MarkerArray."""
+        self.actual_points.append(
+            Point(x=float(p[0]), y=float(p[1]), z=float(p[2]))
+        )
+        msg = MarkerArray()
+        msg.markers.append(self._build_desired_marker())
+        msg.markers.append(self._build_actual_marker())
+        self.marker_array_pub.publish(msg)
 
     # ── Publish twist command ────────────────────────────────────
     def _publish_twist(self, v: np.ndarray):
@@ -286,10 +342,6 @@ class ChallengeRunner(Node):
                 q_meas, qd_meas, q_ref, qd_ref, self.dt
             )
 
-        # ── Convert torque to Cartesian velocity for Servo ───────
-        # Since xArm uses MoveIt Servo (Cartesian velocity interface),
-        # we map the joint-space error to task-space velocity command.
-        # This is the practical interface for the real robot.
         J = position_jacobian(q_meas)
         e_task = p_ref - p_meas
 
@@ -304,6 +356,7 @@ class ChallengeRunner(Node):
         v_cmd = np.clip(v_cmd, -self.max_speed, self.max_speed)
 
         self._publish_twist(v_cmd)
+        self._publish_actual_path_marker(p_meas)
 
         # ── Log data ─────────────────────────────────────────────
         self.log_data["time"].append(t_rel)
@@ -352,7 +405,22 @@ class ChallengeRunner(Node):
 
     def _save_logs(self):
         """Save trial data to CSV and metadata JSON."""
-        pkg_dir = pathlib.Path(__file__).resolve().parent
+        # Resolve source directory: walk up from __file__ to find src/
+        _this = pathlib.Path(__file__).resolve()
+        # Try to find the src-tree copy (avoid saving inside install/)
+        src_marker = "src/xarm_ros2/xarm_perturbations/xarm_perturbations"
+        for parent in _this.parents:
+            candidate = parent / src_marker
+            if candidate.is_dir():
+                pkg_dir = candidate
+                break
+        else:
+            # Fallback: use the workspace root if launched from there
+            pkg_dir = pathlib.Path.cwd() / "src" / "xarm_ros2" \
+                       / "xarm_perturbations" / "xarm_perturbations"
+            if not pkg_dir.exists():
+                pkg_dir = _this.parent  # last resort: same as before
+
         out_dir = pkg_dir / "results" / "challenge" / self.trial_name
         out_dir.mkdir(parents=True, exist_ok=True)
 

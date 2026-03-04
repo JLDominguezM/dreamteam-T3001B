@@ -17,19 +17,7 @@ import numpy as np
 from dataclasses import dataclass, field
 from typing import Tuple
 
-# ═══════════════════════════════════════════════════════════════════════
-#  xArm Lite 6 DH Parameters (Modified DH from URDF)
-# ═══════════════════════════════════════════════════════════════════════
-# Joint origins from URDF (link_base -> link6):
-#   joint1: xyz=(0, 0, 0.2435)     rpy=(0, 0, 0)
-#   joint2: xyz=(0, 0, 0)          rpy=(pi/2, -pi/2, pi)
-#   joint3: xyz=(0.2002, 0, 0)     rpy=(-pi, 0, pi/2)
-#   joint4: xyz=(0.087, -0.22761, 0) rpy=(pi/2, 0, 0)
-#   joint5: xyz=(0, 0, 0)          rpy=(pi/2, 0, 0)
-#   joint6: xyz=(0, 0.0625, 0)     rpy=(-pi/2, 0, 0)
 
-# Standard DH parameters derived from URDF
-# (a, d, alpha, theta_offset)
 DH_PARAMS = [
     (0.0,      0.2435,   0.0,       0.0),       # joint1
     (0.0,      0.0,     -np.pi/2,   0.0),       # joint2
@@ -41,7 +29,6 @@ DH_PARAMS = [
 
 N_JOINTS = 6
 
-# Joint limits from URDF (radians)
 JOINT_LIMITS_LOWER = np.array([
     -2 * np.pi, -2.61799, -0.061087,
     -2 * np.pi, -2.1642,  -2 * np.pi
@@ -117,10 +104,6 @@ def position_jacobian(q: np.ndarray, eps: float = 1e-6) -> np.ndarray:
         J[:, j] = (forward_kinematics(q_pert) - p0) / eps
     return J
 
-
-# ═══════════════════════════════════════════════════════════════════════
-#  IK Parameters
-# ═══════════════════════════════════════════════════════════════════════
 @dataclass
 class IKParams:
     """Parameters for the weighted resolved-rate IK solver."""
@@ -237,11 +220,6 @@ def weighted_resolved_rate_ik(
 
     return q_des, qd_des, qdd_des
 
-
-# ═══════════════════════════════════════════════════════════════════════
-#  Trajectory Generation — Quintic spline between waypoints with dwells
-# ═══════════════════════════════════════════════════════════════════════
-
 @dataclass
 class WaypointDef:
     """Single waypoint definition."""
@@ -279,30 +257,54 @@ def eval_quintic(coeffs: np.ndarray, t: float):
     acc = 2*c[2] + 6*c[3]*t + 12*c[4]*t2 + 20*c[5]*t3
     return pos, vel, acc
 
-
-# ── Default waypoints for the challenge task ─────────────────────────
-# Task: "Spot Welding Star Pattern on Automotive Panel"
-# The robot performs 8 spot welds forming a star/diamond pattern on an
-# automotive door panel.  The first 4 welds are on the lower structural
-# panel (z = 0.15 m) forming a diamond (N-E-S-W), and the next 4 are on
-# the upper reinforcement bracket (z = 0.25 m) forming a rotated diamond
-# (NE-SE-SW-NW).  When viewed from above the 8 points create a star.
+# Task: Spot Welding / Drilling operation on a rectangular workpiece
+# The robot drills/welds at the 4 corners of a metal plate.
 #
-# Z separation: 0.25 - 0.15 = 0.10 m  (>= 0.08 m requirement)
-# 8 distinct waypoints + return to start = 9 total
+# Clearance Plane (Z high): Safe travel height to avoid clamps/fixtures.
+# Work Surface  (Z low):   The metal plate where drilling/welding occurs.
+# Dwell (1.0 s):           Time the tool stays at the work surface to
+#                           complete the drill hole or spot weld.
+#
+# Sequence per corner:
+#   1) Approach at clearance height
+#   2) Plunge down to work surface
+#   3) Dwell 1.0 s (drilling / welding)
+#   4) Retract to clearance height
+#
+# Corner order: top-left → top-right → bottom-right → bottom-left
+
+_Z_WORK = 0.20   # work surface height (metal plate) — raised to avoid Z singularity
+_Z_CLEAR = 0.30   # clearance plane (above clamps/fixtures) — raised accordingly
+_CX, _CY = 0.15, 0.00   # workpiece center — pushed out in X to avoid singularities
+_LX = 0.04        # half-length in X (plate ~0.08 m along X)
+_LY = 0.03        # half-width  in Y (plate ~0.06 m along Y)
+
 DEFAULT_WAYPOINTS = [
-    # Low layer — lower structural panel (z = 0.15 m), diamond N-E-S-W
-    WaypointDef(0.32,  0.10,  0.15, "low",  1.5),   # WP1 — North (start)
-    WaypointDef(0.36,  0.00,  0.15, "low",  1.0),   # WP2 — East
-    WaypointDef(0.32, -0.10,  0.15, "low",  1.0),   # WP3 — South
-    WaypointDef(0.28,  0.00,  0.15, "low",  1.0),   # WP4 — West
-    # High layer — upper reinforcement bracket (z = 0.25 m), rotated diamond
-    WaypointDef(0.34,  0.07,  0.25, "high", 1.0),   # WP5 — Northeast
-    WaypointDef(0.34, -0.07,  0.25, "high", 1.0),   # WP6 — Southeast
-    WaypointDef(0.28, -0.07,  0.25, "high", 1.0),   # WP7 — Southwest
-    WaypointDef(0.28,  0.07,  0.25, "high", 1.0),   # WP8 — Northwest
-    # Return to WP1 (close the loop)
-    WaypointDef(0.32,  0.10,  0.15, "low",  1.5),   # WP9 = WP1
+    # --- Start: hover above workpiece center ---
+    WaypointDef(_CX, _CY, _Z_CLEAR, "high", 1.0),                  # WP1  — Home hover
+
+    # --- Corner 1: top-left (drill/weld) ---
+    WaypointDef(_CX + _LX, _CY - _LY, _Z_CLEAR, "high", 1.0),     # WP2  — Approach top-left (clearance)
+    WaypointDef(_CX + _LX, _CY - _LY, _Z_WORK,  "low",  1.0),     # WP3  — Plunge & dwell (drilling/welding)
+    WaypointDef(_CX + _LX, _CY - _LY, _Z_CLEAR, "high", 1.0),     # WP4  — Retract
+
+    # --- Corner 2: top-right (drill/weld) ---
+    WaypointDef(_CX + _LX, _CY + _LY, _Z_CLEAR, "high", 1.0),     # WP5  — Approach top-right (clearance)
+    WaypointDef(_CX + _LX, _CY + _LY, _Z_WORK,  "low",  1.0),     # WP6  — Plunge & dwell (drilling/welding)
+    WaypointDef(_CX + _LX, _CY + _LY, _Z_CLEAR, "high", 1.0),     # WP7  — Retract
+
+    # --- Corner 3: bottom-right (drill/weld) ---
+    WaypointDef(_CX - _LX, _CY + _LY, _Z_CLEAR, "high", 1.0),     # WP8  — Approach bottom-right (clearance)
+    WaypointDef(_CX - _LX, _CY + _LY, _Z_WORK,  "low",  1.0),     # WP9  — Plunge & dwell (drilling/welding)
+    WaypointDef(_CX - _LX, _CY + _LY, _Z_CLEAR, "high", 1.0),     # WP10 — Retract
+
+    # --- Corner 4: bottom-left (drill/weld) ---
+    WaypointDef(_CX - _LX, _CY - _LY, _Z_CLEAR, "high", 1.0),     # WP11 — Approach bottom-left (clearance)
+    WaypointDef(_CX - _LX, _CY - _LY, _Z_WORK,  "low",  1.0),     # WP12 — Plunge & dwell (drilling/welding)
+    WaypointDef(_CX - _LX, _CY - _LY, _Z_CLEAR, "high", 1.0),     # WP13 — Retract
+
+    # --- Return to home hover ---
+    WaypointDef(_CX, _CY, _Z_CLEAR, "high", 1.0),                  # WP14 — Return to home hover
 ]
 
 DEFAULT_SEGMENT_SEC = 2.0  # transition time between waypoints
