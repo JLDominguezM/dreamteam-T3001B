@@ -275,7 +275,7 @@ def eval_quintic(coeffs: np.ndarray, t: float):
 
 _Z_WORK = 0.20   # work surface height (metal plate) — raised to avoid Z singularity
 _Z_CLEAR = 0.30   # clearance plane (above clamps/fixtures) — raised accordingly
-_CX, _CY = 0.15, 0.00   # workpiece center — pushed out in X to avoid singularities
+_CX, _CY = 0.28, 0.00   # workpiece center — pushed out in X to avoid singularities
 _LX = 0.04        # half-length in X (plate ~0.08 m along X)
 _LY = 0.03        # half-width  in Y (plate ~0.06 m along Y)
 
