@@ -6,6 +6,7 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
+from std_msgs.msg import Bool
 
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
@@ -60,6 +61,11 @@ class PerturbationGenerator(Node):
         self.t0 = time.time()
         self.rng = np.random.default_rng(7)
 
+        # Dynamic enable/disable via topic (allows runner to toggle perturbations)
+        self.create_subscription(
+            Bool, "/perturbation_enable", self._enable_cb, 10
+        )
+
         self.timer = self.create_timer(self.publish_period_s, self.tick)
 
         self.get_logger().info(
@@ -68,6 +74,14 @@ class PerturbationGenerator(Node):
             f"   mode={self.mode}, enabled={self.enabled}\n"
             f"   PUB reliability={('RELIABLE' if reliability==ReliabilityPolicy.RELIABLE else 'BEST_EFFORT')}\n"
         )
+
+    def _enable_cb(self, msg: Bool):
+        """Dynamically enable/disable perturbations from runner node."""
+        prev = self.enabled
+        self.enabled = msg.data
+        if prev != self.enabled:
+            state = "ENABLED" if self.enabled else "DISABLED"
+            self.get_logger().info(f"Perturbation {state} via topic")
 
     def _dp(self):
         if self.mode == "off":

@@ -27,7 +27,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped, Point
 from sensor_msgs.msg import JointState
-from std_msgs.msg import ColorRGBA
+from std_msgs.msg import Bool, ColorRGBA
 from visualization_msgs.msg import Marker, MarkerArray
 from tf2_ros import Buffer, TransformListener
 
@@ -187,6 +187,21 @@ class ChallengeRunner(Node):
             "pert_enabled": [],
         }
 
+        # ── Perturbation enable publisher ─────────────────────────
+        self.pert_pub = self.create_publisher(Bool, "/perturbation_enable", 10)
+
+        # Identify low-layer dwell windows (where drilling happens)
+        # dwell_windows has one entry per waypoint in order
+        self.low_dwell_windows = []
+        for i, wp in enumerate(DEFAULT_WAYPOINTS):
+            if wp.layer == "low" and i < len(self.dwell_windows):
+                self.low_dwell_windows.append(self.dwell_windows[i])
+        self.get_logger().info(
+            f"  Low-layer dwell windows (perturbation zones): "
+            f"{len(self.low_dwell_windows)}"
+        )
+        self.pert_active = False  # tracks current perturbation state
+
         # ── RViz marker publishers ────────────────────────────────
         self.marker_array_pub = self.create_publisher(
             MarkerArray, '/rviz/trajectory_markers', 10
@@ -240,6 +255,10 @@ class ChallengeRunner(Node):
                 f"{np.round(np.degrees(self.home_position), 1)} deg"
             )
             self.get_logger().info("Starting control loop...")
+            # Ensure perturbations start disabled
+            msg = Bool()
+            msg.data = False
+            self.pert_pub.publish(msg)
             self._publish_desired_path_marker()
             self.start_time = self.get_clock().now()
             self.control_timer = self.create_timer(
@@ -307,6 +326,27 @@ class ChallengeRunner(Node):
         msg.twist.linear.z = float(v[2])
         self.servo_pub.publish(msg)
 
+    # ── Perturbation zone check ─────────────────────────────────
+    def _in_low_dwell(self, t: float) -> bool:
+        """Check if time t falls within any low-layer dwell window."""
+        for t_start, t_end in self.low_dwell_windows:
+            if t_start <= t <= t_end:
+                return True
+        return False
+
+    def _update_perturbation_state(self, t_rel: float):
+        """Toggle perturbation injector on/off based on trajectory phase."""
+        if not self.use_perturbations:
+            return
+        should_perturb = self._in_low_dwell(t_rel)
+        if should_perturb != self.pert_active:
+            self.pert_active = should_perturb
+            msg = Bool()
+            msg.data = should_perturb
+            self.pert_pub.publish(msg)
+            state = "ON (low-layer dwell)" if should_perturb else "OFF (transit/high)"
+            self.get_logger().info(f"  Perturbation {state} at t={t_rel:.2f}s")
+
     # ── Main control loop ────────────────────────────────────────
     def _control_loop(self):
         """Execute one control step."""
@@ -320,6 +360,9 @@ class ChallengeRunner(Node):
 
         now = self.get_clock().now()
         t_rel = (now - self.start_time).nanoseconds / 1e9
+
+        # Toggle perturbations if in low-layer dwell
+        self._update_perturbation_state(t_rel)
 
         # Read current state
         q_meas = self.joint_positions.copy()
@@ -374,7 +417,7 @@ class ChallengeRunner(Node):
         self.log_data["saturation"].append(
             self.controller.saturation_flags.tolist()
         )
-        self.log_data["pert_enabled"].append(self.use_perturbations)
+        self.log_data["pert_enabled"].append(self.pert_active)
 
         # Progress logging
         if self.idx % int(self.control_rate * 5) == 0:
@@ -391,6 +434,12 @@ class ChallengeRunner(Node):
         """Save log data and shut down."""
         self.finished = True
         self.control_timer.cancel()
+
+        # Disable perturbations at end of trial
+        msg = Bool()
+        msg.data = False
+        self.pert_pub.publish(msg)
+        self.pert_active = False
 
         # Send zero command
         self._publish_twist(np.zeros(3))
@@ -501,6 +550,11 @@ class ChallengeRunner(Node):
                 {"start": s, "end": e}
                 for s, e in self.dwell_windows
             ],
+            "low_dwell_windows": [
+                {"start": s, "end": e}
+                for s, e in self.low_dwell_windows
+            ],
+            "perturbation_strategy": "low-layer dwells only (drilling zones)",
             "segment_sec": self.segment_sec,
             "timestamp": datetime.now().isoformat(),
         }
