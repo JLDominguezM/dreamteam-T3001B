@@ -79,21 +79,26 @@ ros2 run xarm_perturbations challenge_runner --ros-args \
   -p controller:=pd -p perturbations:=true
 ```
 
-## Task Definition
+## Task Definition — Spot Welding Star Pattern on Automotive Panel
 
-9 waypoints (8 distinct + return to home), 2 Z levels with 0.08 m separation, quintic spline transitions, 1.0–1.5 s dwells.
+The robot performs 8 spot welds forming a **star/diamond pattern** on an automotive door panel. The first 4 welds target the lower structural panel (z = 0.15 m) in a N-E-S-W diamond, and the next 4 target the upper reinforcement bracket (z = 0.25 m) in a rotated NE-SE-SW-NW diamond. Viewed from above, the 8 points create an 8-pointed star.
 
-| WP | X (m) | Y (m)  | Z (m) | Layer |
-|----|-------|--------|-------|-------|
-| 1  | 0.300 | +0.100 | 0.150 | Low   |
-| 2  | 0.350 | +0.050 | 0.150 | Low   |
-| 3  | 0.320 | -0.080 | 0.150 | Low   |
-| 4  | 0.280 | -0.100 | 0.150 | Low   |
-| 5  | 0.280 | +0.100 | 0.230 | High  |
-| 6  | 0.330 | +0.080 | 0.230 | High  |
-| 7  | 0.350 | -0.050 | 0.230 | High  |
-| 8  | 0.300 | -0.100 | 0.230 | High  |
-| 9  | 0.300 | +0.100 | 0.150 | Low   |
+- **9 waypoints** (8 distinct + return to home)
+- **2 Z levels**: low = 0.15 m, high = 0.25 m (separation = 0.10 m >= 0.08 m)
+- **Quintic spline** transitions (C² continuity, zero vel/acc at boundaries)
+- **Dwell times**: 1.0–1.5 s per waypoint
+
+| WP | X (m) | Y (m)  | Z (m) | Layer | Location  |
+|----|-------|--------|-------|-------|-----------|
+| 1  | 0.320 | +0.100 | 0.150 | Low   | North     |
+| 2  | 0.360 | +0.000 | 0.150 | Low   | East      |
+| 3  | 0.320 | -0.100 | 0.150 | Low   | South     |
+| 4  | 0.280 | +0.000 | 0.150 | Low   | West      |
+| 5  | 0.340 | +0.070 | 0.250 | High  | Northeast |
+| 6  | 0.340 | -0.070 | 0.250 | High  | Southeast |
+| 7  | 0.280 | -0.070 | 0.250 | High  | Southwest |
+| 8  | 0.280 | +0.070 | 0.250 | High  | Northwest |
+| 9  | 0.320 | +0.100 | 0.150 | Low   | Return    |
 
 ## IK Parameters
 

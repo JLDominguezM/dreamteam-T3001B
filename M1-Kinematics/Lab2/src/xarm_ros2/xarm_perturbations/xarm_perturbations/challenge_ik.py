@@ -281,21 +281,28 @@ def eval_quintic(coeffs: np.ndarray, t: float):
 
 
 # ── Default waypoints for the challenge task ─────────────────────────
-# 8 distinct waypoints, 2 Z levels (low=0.15, high=0.23), forms a non-trivial
-# "figure-8 in layers" path within xArm Lite 6 reachable workspace.
+# Task: "Spot Welding Star Pattern on Automotive Panel"
+# The robot performs 8 spot welds forming a star/diamond pattern on an
+# automotive door panel.  The first 4 welds are on the lower structural
+# panel (z = 0.15 m) forming a diamond (N-E-S-W), and the next 4 are on
+# the upper reinforcement bracket (z = 0.25 m) forming a rotated diamond
+# (NE-SE-SW-NW).  When viewed from above the 8 points create a star.
+#
+# Z separation: 0.25 - 0.15 = 0.10 m  (>= 0.08 m requirement)
+# 8 distinct waypoints + return to start = 9 total
 DEFAULT_WAYPOINTS = [
-    # Low layer (z = 0.15 m)
-    WaypointDef(0.30,  0.10,  0.15, "low",  1.5),   # WP1 — start
-    WaypointDef(0.35,  0.05,  0.15, "low",  1.0),   # WP2
-    WaypointDef(0.32, -0.08,  0.15, "low",  1.0),   # WP3
-    WaypointDef(0.28, -0.10,  0.15, "low",  1.0),   # WP4
-    # High layer (z = 0.23 m) — >=0.08 m separation
-    WaypointDef(0.28,  0.10,  0.23, "high", 1.0),   # WP5
-    WaypointDef(0.33,  0.08,  0.23, "high", 1.0),   # WP6
-    WaypointDef(0.35, -0.05,  0.23, "high", 1.0),   # WP7
-    WaypointDef(0.30, -0.10,  0.23, "high", 1.0),   # WP8
+    # Low layer — lower structural panel (z = 0.15 m), diamond N-E-S-W
+    WaypointDef(0.32,  0.10,  0.15, "low",  1.5),   # WP1 — North (start)
+    WaypointDef(0.36,  0.00,  0.15, "low",  1.0),   # WP2 — East
+    WaypointDef(0.32, -0.10,  0.15, "low",  1.0),   # WP3 — South
+    WaypointDef(0.28,  0.00,  0.15, "low",  1.0),   # WP4 — West
+    # High layer — upper reinforcement bracket (z = 0.25 m), rotated diamond
+    WaypointDef(0.34,  0.07,  0.25, "high", 1.0),   # WP5 — Northeast
+    WaypointDef(0.34, -0.07,  0.25, "high", 1.0),   # WP6 — Southeast
+    WaypointDef(0.28, -0.07,  0.25, "high", 1.0),   # WP7 — Southwest
+    WaypointDef(0.28,  0.07,  0.25, "high", 1.0),   # WP8 — Northwest
     # Return to WP1 (close the loop)
-    WaypointDef(0.30,  0.10,  0.15, "low",  1.5),   # WP9 = WP1
+    WaypointDef(0.32,  0.10,  0.15, "low",  1.5),   # WP9 = WP1
 ]
 
 DEFAULT_SEGMENT_SEC = 2.0  # transition time between waypoints

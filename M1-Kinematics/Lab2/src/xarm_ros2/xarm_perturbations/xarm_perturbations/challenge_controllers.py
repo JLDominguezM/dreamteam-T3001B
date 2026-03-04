@@ -302,6 +302,13 @@ class CTCController:
             tau_robust = self.params.k_robust * _smooth_sign(S, self.params.sign_eps)
             tau = tau + tau_robust
 
+        # Rate limiting
+        dt = 1.0 / 50.0  # control period
+        tau_rate = (tau - self.prev_tau) / dt
+        max_rate = EFFORT_RATE_LIMIT
+        tau_rate = np.clip(tau_rate, -max_rate, max_rate)
+        tau = self.prev_tau + tau_rate * dt
+
         # Actuator saturation
         self.saturation_flags = np.abs(tau) >= self.params.torque_limit
         tau = np.clip(tau, -self.params.torque_limit, self.params.torque_limit)
