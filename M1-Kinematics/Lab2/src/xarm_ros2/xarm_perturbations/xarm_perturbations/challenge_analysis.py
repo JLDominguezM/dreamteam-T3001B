@@ -64,8 +64,8 @@ def load_trial_csv(csv_path: str) -> Dict[str, np.ndarray]:
             data["p"].append([float(row["px"]), float(row["py"]), float(row["pz"])])
             data["p_des"].append([float(row["px_des"]), float(row["py_des"]), float(row["pz_des"])])
             data["cmd"].append([float(row["cmd_x"]), float(row["cmd_y"]), float(row["cmd_z"])])
-            data["saturation"].append([int(row[f"sat{j+1}"]) for j in range(6)])
-            data["pert_enabled"].append(int(row["pert_enabled"]))
+            data["saturation"].append([int(row[f"sat{j+1}"] in ("1", "True", "true")) for j in range(6)])
+            data["pert_enabled"].append(int(row["pert_enabled"] in ("1", "True", "true")))
 
     return {k: np.array(v) for k, v in data.items()}
 
