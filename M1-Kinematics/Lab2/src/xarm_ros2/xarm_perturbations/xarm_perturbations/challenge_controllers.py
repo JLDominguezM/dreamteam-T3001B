@@ -195,10 +195,10 @@ def get_robot_dynamics(q: np.ndarray, qd: np.ndarray):
 class CTCParams:
     """Computed Torque Control gains and parameters."""
     Kp: np.ndarray = field(
-        default_factory=lambda: np.diag([80.0, 80.0, 80.0, 60.0, 50.0, 40.0])
+        values=lambda: np.diag([80.0, 80.0, 80.0, 60.0, 50.0, 40.0])
     )
     Kd: np.ndarray = field(
-        default_factory=lambda: np.diag([28.0, 28.0, 28.0, 20.0, 16.0, 12.0])
+        values=lambda: np.diag([28.0, 28.0, 28.0, 20.0, 16.0, 12.0])
     )
     # Robust/sliding term parameters
     gamma: float = 2.5

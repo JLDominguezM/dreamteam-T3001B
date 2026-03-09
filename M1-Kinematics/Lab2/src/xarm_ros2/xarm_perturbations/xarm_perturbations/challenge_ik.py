@@ -107,10 +107,10 @@ def position_jacobian(q: np.ndarray, eps: float = 1e-6) -> np.ndarray:
 @dataclass
 class IKParams:
     """Parameters for the weighted resolved-rate IK solver."""
-    wz: float = 2.5          # Z-axis weight (> 1.0), recommended [2.0, 3.5]
-    lam: float = 1.5e-2      # DLS damping, recommended [0.01, 0.02]
-    k_task: float = 14.0     # Task-space error gain, recommended [10, 20]
-    k_null: float = 1.5      # Nullspace posture gain, recommended [1.0, 2.5]
+    wz: float = 2.5          # Z-axis weight (> 1.0)
+    lam: float = 1.5e-2      # DLS damping
+    k_task: float = 14.0     # Task-space error gain
+    k_null: float = 1.5      # Nullspace posture gain
     q_home: np.ndarray = field(
         default_factory=lambda: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     )
